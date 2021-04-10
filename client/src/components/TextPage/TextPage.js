@@ -6,18 +6,22 @@ const login_page = require("../Login/Login");
 
 function TextPage() {
   const { currentContact, userSocket } = React.useContext(AppContext);
-  const [textValue, settextValue] = React.useState("");
+  const [textValue, setTextValue] = React.useState("");
   const [msg, setMsg] = React.useState([]);
 
   useEffect(() => {
-    userSocket.on("incoming-text", (data) => {
-      console.log(msg);
-
-      console.log("got a messege:", data);
-      msg.push(data);
-      setMsg(msg);
-    })
-  }, [msg])
+    let unmounted = false;
+    if (!unmounted) {
+      console.log("hi there");
+      userSocket.on("incoming-text", (data) => {
+        let temp = [...msg, data];
+        setMsg(temp);
+      });
+    }
+    return () => {
+      unmounted = true;
+    };
+  }, [msg]);
 
   async function sendText() {
     console.log("socket from login: ", userSocket);
@@ -25,18 +29,21 @@ function TextPage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'get': 'socketID'
+        get: "socketID",
       },
       body: JSON.stringify({
         username: `${currentContact}`,
       }),
     });
-
     const result = await res.json();
     console.log("recievers socketID: ", await result);
     if (result.result != "not found") {
-      userSocket.emit("texty", { 'recieverID': `${result.result}`, 'text': `${textValue}` });
+      userSocket.emit("texty", {
+        recieverID: `${result.result}`,
+        text: `${textValue}`,
+      });
       // render chat page and remove this page
+      setTextValue("");
     }
   }
   return (
@@ -55,19 +62,25 @@ function TextPage() {
       </div>
 
       <div className="messeges">
-        {
-          React.Children.map(msg, (value) => {
-            return (
-              <div className="text-box">
-                <span>{value}</span>
-              </div>
-            )
-          })}
-
+        {React.Children.map(msg, (value) => {
+          return (
+            <div className="text-box">
+              <span>{value}</span>
+            </div>
+          );
+        })}
       </div>
 
       <div className="input-section">
-        <input type="text" placeholder="Enter something..." width="100%" onChange={(e) => { settextValue(e.target.value) }} />
+        <input
+          type="text"
+          placeholder="Enter something..."
+          width="100%"
+          onChange={(e) => {
+            setTextValue(e.target.value);
+          }}
+          value={textValue}
+        />
         <button className="send-button" onClick={sendText}>
           Send <img src="/svg/send.svg" />
         </button>

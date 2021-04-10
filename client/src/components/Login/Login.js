@@ -30,8 +30,6 @@ function Login() {
       setsocketID(socket.id);
       // console.log(socketID);
     });
-
-    
   }, []);
 
   async function Signin() {
@@ -67,6 +65,7 @@ function Login() {
               onChange={(e) => {
                 setUsername(e.target.value);
               }}
+              value={username}
             />
           </div>
           <div>
