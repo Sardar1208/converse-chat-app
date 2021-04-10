@@ -22,6 +22,10 @@ function Login() {
   useEffect(() => {
     console.log("asdada");
 
+    
+  }, []);
+
+  async function Signin() {
     const socket = io("http://localhost:8080/");
 
     socket.on("connect", () => {
@@ -30,9 +34,7 @@ function Login() {
       setsocketID(socket.id);
       // console.log(socketID);
     });
-  }, []);
-
-  async function Signin() {
+    
     console.log("from signin", socketID);
     const res = await fetch("http://localhost:8080/login_user", {
       method: "POST",

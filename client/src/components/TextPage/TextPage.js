@@ -8,23 +8,27 @@ function TextPage() {
   const { currentContact, userSocket } = React.useContext(AppContext);
   const [textValue, setTextValue] = React.useState("");
   const [msg, setMsg] = React.useState([]);
+  const [myMsg, setmyMsg] = React.useState([]);
+  const [commonMsg, setcommonMsg] = React.useState([]);
 
   useEffect(() => {
     let unmounted = false;
     if (!unmounted) {
-      console.log("hi there");
       userSocket.on("incoming-text", (data) => {
-        let temp = [...msg, data];
-        setMsg(temp);
+        let temp = [...commonMsg, { isSender: false, data: data }];
+        setcommonMsg(temp);
       });
     }
     return () => {
       unmounted = true;
     };
-  }, [msg]);
+  }, [commonMsg]);
 
   async function sendText() {
-    console.log("socket from login: ", userSocket);
+    const temp = [...commonMsg, { isSender: true, data: textValue }];
+    setcommonMsg(temp);
+
+
     const res = await fetch("http://localhost:8080/get_data", {
       method: "POST",
       headers: {
@@ -36,7 +40,6 @@ function TextPage() {
       }),
     });
     const result = await res.json();
-    console.log("recievers socketID: ", await result);
     if (result.result != "not found") {
       userSocket.emit("texty", {
         recieverID: `${result.result}`,
@@ -46,6 +49,13 @@ function TextPage() {
       setTextValue("");
     }
   }
+
+  // function make(msgObj){
+  //   for (const i of msgObj) {
+      
+  //   }
+  // }
+
   return (
     <div>
       <div className="my-navbar">
@@ -62,10 +72,10 @@ function TextPage() {
       </div>
 
       <div className="messeges">
-        {React.Children.map(msg, (value) => {
+        {commonMsg.map((value, key) => {
           return (
-            <div className="text-box">
-              <span>{value}</span>
+            <div key={key + "-" + value.data} className={value.isSender ? "my-text-box" : "text-box"}>
+              <span>{value.data}</span>
             </div>
           );
         })}
