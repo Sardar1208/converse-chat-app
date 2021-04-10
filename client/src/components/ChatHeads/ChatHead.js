@@ -11,7 +11,7 @@ function ChatHead() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        get: "users",
+        'get': "users",
       },
     });
 

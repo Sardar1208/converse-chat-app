@@ -55,3 +55,17 @@
 .send-button img{
     padding-bottom: 0.5rem;
 }
+.messeges{
+    background-color: #dee3de;
+    margin: 0;
+}
+.text-box{
+    width: 45%;
+    background-color: lightgreen;
+    margin: 1rem;
+    margin-top: 0;
+    font-size: 1.5rem;
+    padding-left: 0.5rem;
+    border-radius: 1rem;
+    border-bottom-left-radius: 0%;
+}

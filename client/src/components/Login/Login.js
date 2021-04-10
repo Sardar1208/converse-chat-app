@@ -1,4 +1,5 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { AppContext } from "../../AppContext";
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,6 +12,8 @@ import TextPage from "../TextPage/TextPage";
 import "./Login.css";
 
 function Login() {
+  const { setuserSocket } = React.useContext(AppContext);
+
   const history = useHistory();
   const [username, setUsername] = useState("");
   const [socketID, setsocketID] = useState("");
@@ -22,10 +25,13 @@ function Login() {
     const socket = io("http://localhost:8080/");
 
     socket.on("connect", () => {
+      setuserSocket(socket);
       console.log(`connected with id: ${socket.id}`);
       setsocketID(socket.id);
       // console.log(socketID);
     });
+
+    
   }, []);
 
   async function Signin() {

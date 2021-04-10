@@ -5,6 +5,7 @@ const cors = require("cors");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
+const { query } = require("express");
 dotenv.config();
 // const userSocketDB = require("./user-socket.js");
 const db = mysql.createConnection({
@@ -52,6 +53,12 @@ const io = socket(server, {
 });
 io.on("connection", (socket) => {
   console.log("connected", socket.id);
+
+  socket.on("texty", (data) => {
+    console.log("text recieved: ", data);
+    socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", `${data.text}`);
+  })
+
   socket.on("disconnect", () => {
     console.log("client disconnected", socket.id);
   });
@@ -115,20 +122,34 @@ app.post("/login_user", async (req, res) => {
 });
 
 app.post("/get_data", (req, res) => {
-  console.log(req.headers);
-  const query = "SELECT Username FROM UserSocketTable";
-  db.query(query, (err, result) => {
-    if (err) {
-      console.log(err);
-      res.json({ result: "no users" });
-    } else {
-      let users = result.map((item) => {
-        // console.log("from map: ", item.Username)
-        return `${item.Username}`;
-      });
-      res.json({ result: `${users}` });
-    }
-  });
+  console.log(req.headers.get);
+  if (req.headers.get == "users") {
+    const query = "SELECT Username FROM UserSocketTable";
+    db.query(query, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.json({ result: "no users" });
+      } else {
+        let users = result.map((item) => {
+          // console.log("from map: ", item.Username)
+          return `${item.Username}`;
+        });
+        res.json({ result: `${users}` });
+      }
+    });
+  }
+  else if (req.headers.get == "socketID") {
+    const query = `select SocketID from UserSocketTable WHERE Username="${req.body.username}"`;
+    db.query(query, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.json({ result: "not found" });
+      } else {
+        console.log(result);
+        res.json({ result: `${result[0].SocketID}` });
+      }
+    });
+  }
 });
 //select * from UserSocketTable where Username="sarthak"
 //INSERT INTO UserSocketTable VALUES ("Sarthak", "sd34sdf34242aAASD")
