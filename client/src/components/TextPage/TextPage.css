@@ -1,0 +1,57 @@
+.input-section{
+    position: absolute;
+    bottom: 0;
+    background-color: #999b84;
+    width: 100%;
+}
+.input-section input{
+    background-color: #dee3de;
+    width: 85vw;
+    font-size: 1.5rem;
+    border-radius: 5rem;
+    margin: 1rem;
+    padding-left: 0.5rem;
+    border-color: transparent;
+}
+.my-navbar{
+    background-color: #999b84;
+    display: flex;
+    align-items: center;
+
+}
+.profile-img{
+    width: 40px;
+    height: 40px;
+    /* object-fit:fill */
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+.chat-title{
+    color: black;
+}
+.status{
+    color: green;
+    margin-top: 0.25rem;
+    width: 3rem;
+}
+.back-button{
+    background-color: transparent;
+    border: none;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+.back-button img {
+    width: 1.5rem;
+}
+.send-button{
+    background-color: #98acf8;
+    border: none;
+    border-radius: 5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.send-button img{
+    padding-bottom: 0.5rem;
+}
