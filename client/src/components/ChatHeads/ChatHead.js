@@ -2,11 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import "./ChatHead.css";
 import { AppContext } from "../../AppContext";
+import connectSocket from "../Utility/connectSocket";
 
 function ChatHead() {
+  
   const [usersList, SetUsersList] = useState();
-  const { contacts, setContacts, setCurrentContact } = useContext(AppContext);
+  const { contacts, setContacts, setCurrentContact,setuserSocket,userSocket,username,setUsername } = useContext(AppContext);
   useEffect(async () => {
+    await connectSocket(setuserSocket);
+
     const res = await fetch("http://localhost:8080/get_data", {
       method: "POST",
       headers: {

@@ -2,18 +2,20 @@ import React, { useEffect } from "react";
 import { Nav } from "react-bootstrap";
 import "./TextPage.css";
 import { AppContext } from "../../AppContext";
+import connectSocket from "../Utility/connectSocket";
 const login_page = require("../Login/Login");
 
 function TextPage() {
-  const { currentContact, userSocket } = React.useContext(AppContext);
+  const { currentContact,setuserSocket,userSocket,username,setUsername } = React.useContext(AppContext);
   const [textValue, setTextValue] = React.useState("");
   const [msg, setMsg] = React.useState([]);
   const [myMsg, setmyMsg] = React.useState([]);
   const [commonMsg, setcommonMsg] = React.useState([]);
 
-  useEffect(() => {
+  useEffect(async() => {
     let unmounted = false;
     if (!unmounted) {
+      await connectSocket(setuserSocket);
       userSocket.on("incoming-text", (data) => {
         let temp = [...commonMsg, { isSender: false, data: data }];
         setcommonMsg(temp);
@@ -52,7 +54,7 @@ function TextPage() {
 
   // function make(msgObj){
   //   for (const i of msgObj) {
-      
+
   //   }
   // }
 

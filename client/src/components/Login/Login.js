@@ -9,47 +9,30 @@ import {
 } from "react-router-dom";
 import io from "socket.io-client";
 import TextPage from "../TextPage/TextPage";
+import connectSocket from "../Utility/connectSocket";
 import "./Login.css";
 
 function Login() {
-  const { setuserSocket } = React.useContext(AppContext);
+  const { setuserSocket,userSocket,username,setUsername } = React.useContext(AppContext);
 
   const history = useHistory();
-  const [username, setUsername] = useState("");
-  const [socketID, setsocketID] = useState("");
+  // const [username, setUsername] = useState("");
+  // const [socketID, setsocketID] = useState("");
   // let socketID = "";
 
   useEffect(() => {
     console.log("asdada");
-
     
   }, []);
 
   async function Signin() {
-    const socket = io("http://localhost:8080/");
-
-    socket.on("connect", () => {
-      setuserSocket(socket);
-      console.log(`connected with id: ${socket.id}`);
-      setsocketID(socket.id);
-      // console.log(socketID);
-    });
-    
-    console.log("from signin", socketID);
-    const res = await fetch("http://localhost:8080/login_user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: `${username}`,
-        socketID: `${socketID}`,
-      }),
-    });
-
-    const result = await res.json();
-    console.log(await result);
+    if(username){
+      history.push("/chatHead");
+    }
+    const result = await connectSocket(setuserSocket);
+    console.log("result: ",await result);
     if (result.result == "success") {
+      localStorage.setItem("username",`${username}`);
       history.push("/chatHead");
       // render chat page and remove this page
     }

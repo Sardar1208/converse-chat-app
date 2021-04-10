@@ -7,12 +7,18 @@ import Login from "./components/Login/Login.js";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AppContext } from "./AppContext";
+import io from "socket.io-client";
+
 
 function App() {
   const [contacts, setContacts] = React.useState([]);
   const [currentContact, setCurrentContact] = React.useState(null);
   const [userSocket, setuserSocket] = React.useState(null);
-  const AppState = { contacts, setContacts, currentContact, setCurrentContact, userSocket, setuserSocket };
+  const [username, setUsername] = React.useState(null);
+  const AppState = { contacts, setContacts, currentContact, setCurrentContact, userSocket, setuserSocket, username, setUsername};
+
+  
+
   return (
     <AppContext.Provider value={AppState}>
       <Router>
