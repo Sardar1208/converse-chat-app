@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-router-dom";
 import "./ChatHead.css";
 import { AppContext } from "../../AppContext";
 
 function ChatHead() {
+  const history = useHistory();
   const [usersList, SetUsersList] = useState();
-  const { contacts, setContacts, setCurrentContact } = useContext(AppContext);
+  const { contacts, setContacts, setCurrentContact, userSocket } = useContext(AppContext);
   useEffect(async () => {
+
+    if (!userSocket) {
+      history.push("/login");
+    }
     const res = await fetch("http://localhost:8080/get_data", {
       method: "POST",
       headers: {
@@ -40,7 +45,7 @@ function ChatHead() {
     }
   }, []);
 
-  function openChat() {}
+  function openChat() { }
 
   return <div>{usersList}</div>;
 }

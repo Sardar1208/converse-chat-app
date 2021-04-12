@@ -2,9 +2,11 @@ import React, { useEffect } from "react";
 import { Nav } from "react-bootstrap";
 import "./TextPage.css";
 import { AppContext } from "../../AppContext";
+import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-router-dom";
 const login_page = require("../Login/Login");
 
 function TextPage() {
+  const history = useHistory();
   const { currentContact, userSocket } = React.useContext(AppContext);
   const [textValue, setTextValue] = React.useState("");
   const [msg, setMsg] = React.useState([]);
@@ -12,12 +14,22 @@ function TextPage() {
   const [commonMsg, setcommonMsg] = React.useState([]);
 
   useEffect(() => {
+
+  }, [])
+  useEffect(() => {
+
     let unmounted = false;
     if (!unmounted) {
-      userSocket.on("incoming-text", (data) => {
-        let temp = [...commonMsg, { isSender: false, data: data }];
-        setcommonMsg(temp);
-      });
+      if (!userSocket) {
+        console.log("in here brouh")
+        history.push("/login");
+      } else {
+        userSocket.on("incoming-text", (data) => {
+          let temp = [...commonMsg, { isSender: false, data: data }];
+          setcommonMsg(temp);
+        });
+      }
+
     }
     return () => {
       unmounted = true;
@@ -52,7 +64,7 @@ function TextPage() {
 
   // function make(msgObj){
   //   for (const i of msgObj) {
-      
+
   //   }
   // }
 
