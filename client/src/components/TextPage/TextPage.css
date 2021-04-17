@@ -1,20 +1,43 @@
+.split-view{
+    display: grid;
+    grid: 100vh / auto;
+    grid-template-columns: 25% 75%;
+}
+.contacts-section{
+    max-height: 100vh;
+    overflow:scroll;
+    border-right: 1px solid grey;
+}
+.chat-section{
+    display: grid;
+    grid-template-rows: 10% 80% 10%;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.contacts-section::-webkit-scrollbar {
+    display: none;
+}
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
 .input-section{
-    position: absolute;
-    bottom: 0;
-    background-color: #999b84;
-    width: 100%;
+    background-color: white;
 }
 .input-section input{
+    outline: none;
     background-color: #dee3de;
-    width: 85vw;
+    width: 70%;
     font-size: 1.5rem;
+    border: none;
     border-radius: 5rem;
     margin: 1rem;
     padding-left: 0.5rem;
-    border-color: transparent;
+    border-color: black;
+}
+.input-section input:focus{
+    border: 2px solid black;
 }
 .my-navbar{
-    background-color: #999b84;
+    background-color: white;
     display: flex;
     align-items: center;
 
@@ -44,7 +67,7 @@
     width: 1.5rem;
 }
 .send-button{
-    background-color: #98acf8;
+    background-color: rgb(121, 121, 233);
     border: none;
     border-radius: 5rem;
     font-size: 1.5rem;
@@ -79,4 +102,8 @@
     padding-left: 0.5rem;
     border-radius: 1rem;
     border-bottom-right-radius: 0%;
+}
+hr{
+    color: white;
+    background-color: white;
 }

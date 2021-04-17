@@ -9,9 +9,6 @@ function ChatHead() {
   const { contacts, setContacts, setCurrentContact, userSocket } = useContext(AppContext);
   useEffect(async () => {
 
-    if (!userSocket) {
-      history.push("/login");
-    }
     const res = await fetch("http://localhost:8080/get_data", {
       method: "POST",
       headers: {
@@ -28,17 +25,19 @@ function ChatHead() {
     if (result.result != "no users") {
       let List = newResult.map((user) => {
         return (
-          <Link onClick={() => setCurrentContact(user)} to="/textPage">
-            <div className="chat-head" onClick={openChat}>
-              <div className="card-text">
-                <h1>{user}</h1>
-                <span>
-                  <img src="/svg/sent.svg" />
-                </span>
-                <h5>This is your last text...</h5>
-              </div>
+          <div className="chat-head" onClick={() => setCurrentContact(user)}>
+            <div className="card-img">
+              <img src="/images/pic_1.jpg" />
             </div>
-          </Link>
+            <div className="card-text">
+              <h1>{user}</h1>
+              <span>
+                <img src="/svg/sent.svg" />
+              </span>
+              <h5>This is your last text...</h5>
+            </div>
+            <hr />
+          </div>
         );
       });
       SetUsersList(List);
@@ -51,3 +50,31 @@ function ChatHead() {
 }
 
 export default ChatHead;
+
+// create table conversation (
+// 	conversation_ID varchar(20) not null,
+//     sender_ID varchar(20)  not null,
+//     reciever_ID varchar(20) not null,
+//     primary key(conversation_ID)
+// );
+
+// create table message(
+// 	msg_ID varchar(20) not null,
+//     conversation_ID varchar(20),
+//     msg varchar(255),
+//     msg_time datetime,
+//     constraint fk_conversation_ID foreign key(conversation_ID)
+//     references conversation(conversation_ID),
+//     sender_ID varchar(20)
+// )
+
+// insert into conversation(conversation_ID, sender_ID, reciever_ID) values
+// ('ab','a','b'), ('cd','c','d'), ('ef','e','f')
+
+// insert into message(msg_ID, conversation_ID, msg, msg_time, sender_ID) values
+// ('1', 'ab', 'hello world', '1999-08-12', 'a')
+
+// select * 
+// from message
+// inner join conversation
+// on message.conversation_ID = conversation.conversation_ID

@@ -30,7 +30,7 @@ function App() {
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/textPage" component={TextPage} />
-          <Route path="/chatHead" component={ChatHead} />
+          {/* <Route path="/chatHead" component={ChatHead} /> */}
         </Switch>
       </Router>
     </AppContext.Provider>

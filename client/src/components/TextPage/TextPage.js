@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Nav } from "react-bootstrap";
 import "./TextPage.css";
+import ChatHead from "../ChatHeads/ChatHead"
 import { AppContext } from "../../AppContext";
 import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-router-dom";
 const login_page = require("../Login/Login");
@@ -13,9 +14,6 @@ function TextPage() {
   const [myMsg, setmyMsg] = React.useState([]);
   const [commonMsg, setcommonMsg] = React.useState([]);
 
-  useEffect(() => {
-
-  }, [])
   useEffect(() => {
 
     let unmounted = false;
@@ -69,43 +67,49 @@ function TextPage() {
   // }
 
   return (
-    <div>
-      <div className="my-navbar">
-        <button className="back-button">
-          <img src="/svg/back.svg" />
-        </button>
-
-        <img src="/images/pic_1.jpg" className="profile-img " />
-        <a href="/home">
-          <h3 className="chat-title">{currentContact}</h3>
-        </a>
-
-        <img src="/svg/status.svg" className="status" />
+    <div className="split-view">
+      <div className="contacts-section">
+        <ChatHead />
       </div>
 
-      <div className="messeges">
-        {commonMsg.map((value, key) => {
-          return (
-            <div key={key + "-" + value.data} className={value.isSender ? "my-text-box" : "text-box"}>
-              <span>{value.data}</span>
-            </div>
-          );
-        })}
-      </div>
+      <div className="chat-section">
+        <div className="my-navbar">
+          <button className="back-button">
+            <img src="/svg/back.svg" />
+          </button>
 
-      <div className="input-section">
-        <input
-          type="text"
-          placeholder="Enter something..."
-          width="100%"
-          onChange={(e) => {
-            setTextValue(e.target.value);
-          }}
-          value={textValue}
-        />
-        <button className="send-button" onClick={sendText}>
-          Send <img src="/svg/send.svg" />
-        </button>
+          <img src="/images/pic_1.jpg" className="profile-img " />
+          <a href="/home">
+            <h3 className="chat-title">{currentContact}</h3>
+          </a>
+
+          <img src="/svg/status.svg" className="status" />
+        </div>
+
+        <div className="messeges">
+          {commonMsg.map((value, key) => {
+            return (
+              <div key={key + "-" + value.data} className={value.isSender ? "my-text-box" : "text-box"}>
+                <span>{value.data}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="input-section">
+          <input
+            type="text"
+            placeholder="Enter something..."
+            width="100%"
+            onChange={(e) => {
+              setTextValue(e.target.value);
+            }}
+            value={textValue}
+          />
+          <button className="send-button" onClick={sendText}>
+            Send <img src="/svg/send.svg" />
+          </button>
+        </div>
       </div>
     </div>
   );

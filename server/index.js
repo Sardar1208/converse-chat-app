@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
 
   socket.on("texty", (data) => {
     console.log("text recieved: ", data);
+
     socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", `${data.text}`);
   })
 
@@ -65,15 +66,6 @@ io.on("connection", (socket) => {
 });
 
 app.get("/create", (req, res) => {
-  // const sql = 'CREATE DATABASE userSocket';
-  // db.query(sql, (err, result) => {
-  //     if (err)
-  //     throw err;
-
-  //     console.log(result);
-  //     res.send("database created");
-  // })
-
   const sql =
     "CREATE TABLE UserSocketTable (Username varchar(255), SocketID varchar(255))";
   userSocketDB.query(sql, (err, result) => {
@@ -86,7 +78,7 @@ app.get("/create", (req, res) => {
 
 app.post("/login_user", async (req, res) => {
   console.log(req.body);
-  const query = `select * from UserSocketTable where Username="${req.body.username}"`;
+  const query = `select * from users where mobile_no="${req.body.mobile}"`;
   db.query(query, (err, result) => {
     if (err) {
       console.log(err);
@@ -94,7 +86,7 @@ app.post("/login_user", async (req, res) => {
     } else {
       if (result.length != 0) {
         console.log(result);
-        const query = `UPDATE UserSocketTable SET SocketID="${req.body.socketID}" WHERE Username="${req.body.username}"`;
+        const query = `UPDATE users SET socket_ID="${req.body.socketID}" WHERE mobile_no="${req.body.mobile}"`;
         db.query(query, (err, result) => {
           if (err) {
             console.log(err);
@@ -105,21 +97,27 @@ app.post("/login_user", async (req, res) => {
           }
         });
       } else {
-        const query = `INSERT INTO UserSocketTable VALUES ("${req.body.username}", "${req.body.socketID}")`;
-        db.query(query, (err, result) => {
-          if (err) {
-            console.log(err);
-            res.json({ result: "failure" });
-          } else {
-            console.log(result);
-            res.json({ result: "success" });
-          }
-        });
+        console.log("query result: ", result);
+        res.json({ result: "new user" });
       }
     }
   });
-  // TODO - ADD sql query for creating a table and saving values to it.
 });
+
+app.post("/user_details", (req, res) => {
+  console.log("the reqbody: ", req.body);
+  console.log("sdfsfs: ", parseInt(req.body.mobile));
+  const query = `INSERT INTO users VALUES ('${req.body.email}','${req.body.username}','${req.body.mobile}', '${req.body.socket_ID}','offline')`;
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.json({ result: "failure" });
+    } else {
+      res.json({ result: "success" });
+      console.log("the later result: ", result)
+    }
+  })
+})
 
 app.post("/get_data", (req, res) => {
   console.log(req.headers.get);
