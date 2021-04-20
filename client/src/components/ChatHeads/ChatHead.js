@@ -15,7 +15,11 @@ function ChatHead() {
         "Content-Type": "application/json",
         'get': "users",
       },
+      body: JSON.stringify({
+        reciever_mobile: sessionStorage.getItem("loggedInUser"),
+      }),
     });
+    //where sender_mobile="8459566516" and req_status="accepted"
 
     const result = await res.json();
     const newResult = result.result.split(",");

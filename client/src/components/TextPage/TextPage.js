@@ -23,8 +23,8 @@ function TextPage() {
           <div className="request-block">
             <span>{request.sender_mobile}</span>
             <div>
-              <button className="accept-btn"><img src="/svg/sent.svg" /></button>
-              <button className="decline-btn"><img src="/svg/cross.svg" /></button>
+              <button className="accept-btn" onClick={() => { respond_request("accepted", request.sender_mobile) }}><img src="/svg/sent.svg" /></button>
+              <button className="decline-btn" on onClick={() => { respond_request("declined", request.sender_mobile) }}><img src="/svg/cross.svg" /></button>
             </div>
           </div>
         )
@@ -55,6 +55,25 @@ function TextPage() {
       unmounted = true;
     };
   }, [commonMsg]);
+
+  async function respond_request(status, sender) {
+    console.log("in here");
+    const res = await fetch("http://localhost:8080/respond_request", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        sender_mobile: `${sender}`,
+        reciever_mobile: sessionStorage.getItem("loggedInUser"),
+        response: status,
+      }),
+    });
+    const result = await res.json();
+    if (result.result == "success") {
+      pending_requests();
+    }
+  }
 
   async function sendText() {
     const temp = [...commonMsg, { isSender: true, data: textValue }];

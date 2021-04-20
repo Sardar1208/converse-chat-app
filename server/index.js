@@ -163,15 +163,18 @@ io.on("connection", (socket) => {
   app.post("/get_data", (req, res) => {
     console.log(req.headers.get);
     if (req.headers.get == "users") {
-      const query = "SELECT Username FROM UserSocketTable";
+      const query = `select username from users
+                    join pendingrequests
+                    on pendingrequests.sender_mobile = users.mobile_no
+                    where pendingrequests.reciever_mobile="${req.body.reciever_mobile}" and req_status="accepted"`;
       db.query(query, (err, result) => {
         if (err) {
           console.log(err);
           res.json({ result: "no users" });
         } else {
           let users = result.map((item) => {
-            // console.log("from map: ", item.Username)
-            return `${item.Username}`;
+            console.log("from map: ", item.username)
+            return `${item.username}`;
           });
           res.json({ result: `${users}` });
         }
@@ -202,7 +205,7 @@ io.on("connection", (socket) => {
       })
     }
     else if (req.headers.get == "pending_requests") {
-      const query = `select sender_mobile from pendingrequests where reciever_mobile="${req.body.mobile}"`;
+      const query = `select sender_mobile from pendingrequests where reciever_mobile="${req.body.mobile}" and req_status="pending"`;
       db.query(query, (err, result) => {
         if (err) {
           console.log(err);
@@ -213,6 +216,19 @@ io.on("connection", (socket) => {
         }
       })
     }
-    
+
   });
+
+  app.post("/respond_request", (req, res) => {
+    const query = `update pendingrequests set req_status='${req.body.response}' where sender_mobile='${req.body.sender_mobile}' and reciever_mobile='${req.body.reciever_mobile}'`
+    db.query(query, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.json({ result: "failure" });
+      } else {
+        console.log("responded to a request...");
+        res.json({ result: "success" });
+      }
+    })
+  })
 })
