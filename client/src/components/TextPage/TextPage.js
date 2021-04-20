@@ -1,18 +1,37 @@
 import React, { useEffect } from "react";
-import { Nav } from "react-bootstrap";
 import "./TextPage.css";
 import ChatHead from "../ChatHeads/ChatHead"
 import { AppContext } from "../../AppContext";
 import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-router-dom";
-const login_page = require("../Login/Login");
 
 function TextPage() {
   const history = useHistory();
   const { currentContact, userSocket } = React.useContext(AppContext);
   const [textValue, setTextValue] = React.useState("");
+  const [friendsText, setfriendsText] = React.useState("");
   const [msg, setMsg] = React.useState([]);
   const [myMsg, setmyMsg] = React.useState([]);
   const [commonMsg, setcommonMsg] = React.useState([]);
+  const [requests, setRequests] = React.useState([]);
+  const [requestList, setRequestList] = React.useState([]);
+
+  useEffect(() => {
+    //TODO - run this when the app loads
+    let listOfRequests =
+      requests.map((request) => {
+        return (
+          <div className="request-block">
+            <span>{request.sender_mobile}</span>
+            <div>
+              <button className="accept-btn"><img src="/svg/sent.svg" /></button>
+              <button className="decline-btn"><img src="/svg/cross.svg" /></button>
+            </div>
+          </div>
+        )
+      })
+    setRequestList(listOfRequests);
+
+  }, [requests])
 
   useEffect(() => {
 
@@ -26,6 +45,9 @@ function TextPage() {
           let temp = [...commonMsg, { isSender: false, data: data }];
           setcommonMsg(temp);
         });
+        userSocket.on("recieving_request", (data) => {
+          console.log("got a new friend request: ", data);
+        })
       }
 
     }
@@ -60,17 +82,72 @@ function TextPage() {
     }
   }
 
-  // function make(msgObj){
-  //   for (const i of msgObj) {
+  function openTab(name) {
+    if (name == "request") {
 
-  //   }
-  // }
+    }
+  }
+
+  async function pending_requests() {
+    const res = await fetch("http://localhost:8080/get_data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        get: "pending_requests",
+      },
+      body: JSON.stringify({
+        mobile: `${sessionStorage.getItem("loggedInUser")}`,
+      }),
+    });
+    const result = await res.json();
+    if (result.result.length != 0) {
+      console.log(result.result);
+      setRequests(result.result);
+    }
+
+  }
+
+  async function searchContact() {
+    userSocket.emit("sending_request", { sender_mobile: `${sessionStorage.getItem("loggedInUser")}`, reciever_mobile: `${friendsText}` });
+  }
 
   return (
     <div className="split-view">
       <div className="contacts-section">
+        <div className="left-navbar">
+          <div>
+            <span className="my-profile">Sarthak</span>
+          </div>
+          <div className="options">
+            <button onClick={() => { pending_requests() }}><img src="/svg/add.svg" /></button>
+            <button><img src="/svg/friends.svg" /></button>
+          </div>
+        </div>
         <ChatHead />
+
+        <div className="friends-section">
+          <div className="friends-innerdiv">
+            <h3 className="friends-heading">Add your friends to the chat. Search using their unique mobile numbers.</h3>
+            <input
+              className="friends-input"
+              type="text"
+              placeholder="Search..."
+              width="100%"
+              onChange={(e) => {
+                setfriendsText(e.target.value);
+              }}
+              value={friendsText}
+            />
+            <button className="friends-button" onClick={searchContact}>Search</button>
+          </div>
+        </div>
+
+        <div className="pending_requests">
+          {requestList}
+        </div>
       </div>
+
+
 
       <div className="chat-section">
         <div className="my-navbar">

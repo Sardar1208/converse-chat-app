@@ -46,7 +46,7 @@ function ChatHead() {
 
   function openChat() { }
 
-  return <div>{usersList}</div>;
+  return <div style={{display:"none"}}>{usersList}</div>;
 }
 
 export default ChatHead;

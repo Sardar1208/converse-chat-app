@@ -4,6 +4,8 @@
     grid-template-columns: 25% 75%;
 }
 .contacts-section{
+    display: grid;
+    grid-template-rows: 10% auto;
     max-height: 100vh;
     overflow:scroll;
     border-right: 1px solid grey;
@@ -16,6 +18,12 @@
 }
 .contacts-section::-webkit-scrollbar {
     display: none;
+}
+
+.my-profile{
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding-left: 1rem;
 }
   
   /* Hide scrollbar for IE, Edge and Firefox */
@@ -33,6 +41,45 @@
     padding-left: 0.5rem;
     border-color: black;
 }
+.friends-innerdiv{
+    margin: auto;
+    /* background-color: black; */
+}
+.friends-section{
+    background-color: white;
+    height: 100%;
+    display: flex;
+}
+.friends-heading{
+    font-size: 1rem;
+    padding-bottom: 2rem;
+    display: block;
+    margin: auto;
+    text-align: center;
+}
+.friends-button{
+    background-color: rgb(121, 121, 233);
+    display: block;
+    border: none;
+    border-radius: 5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin: auto;
+}
+.friends-input{
+    display: block;
+    outline: none;
+    background-color: #dee3de;
+    width: 80%;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 5rem;
+    margin: auto;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+}
 .input-section input:focus{
     border: 2px solid black;
 }
@@ -40,7 +87,12 @@
     background-color: white;
     display: flex;
     align-items: center;
-
+}
+.left-navbar{
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 .profile-img{
     width: 40px;
@@ -106,4 +158,34 @@
 hr{
     color: white;
     background-color: white;
+}
+.options button{
+    border: none;
+    border-radius: 50%;
+    margin: 0.5rem;
+    height: 40px;
+    width: 40px;
+}
+.options button img{
+    width: 90%;
+}
+.pending_requests{
+    height: 100%;
+    background-color: white;
+}
+.request-block{
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+}
+.request-block button{
+    border: none;
+    border-radius: 50%;
+    margin-left: 1rem;
+}
+.accept-btn{
+    background-color: rgba(128, 204, 93, 0.719);
+}
+.decline-btn{
+    background-color: rgba(209, 79, 70, 0.836);
 }
