@@ -6,6 +6,7 @@ const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const { query } = require("express");
+const { v4: uuid } = require('uuid');
 dotenv.config();
 // const userSocketDB = require("./user-socket.js");
 const db = mysql.createConnection({
@@ -163,20 +164,35 @@ io.on("connection", (socket) => {
   app.post("/get_data", (req, res) => {
     console.log(req.headers.get);
     if (req.headers.get == "users") {
-      const query = `select username from users
-                    join pendingrequests
-                    on pendingrequests.sender_mobile = users.mobile_no
-                    where pendingrequests.reciever_mobile="${req.body.reciever_mobile}" and req_status="accepted"`;
+      const query = `select sender_ID, reciever_ID from conversation where sender_ID="${req.body.reciever_mobile}" or reciever_ID="${req.body.reciever_mobile}"`;
       db.query(query, (err, result) => {
         if (err) {
           console.log(err);
           res.json({ result: "no users" });
         } else {
           let users = result.map((item) => {
-            console.log("from map: ", item.username)
-            return `${item.username}`;
+            console.log("from map: ", item)
+            if (item.sender_ID == req.body.reciever_mobile) {
+              return item.reciever_ID;
+            } else {
+              return item.sender_ID;
+            }
           });
-          res.json({ result: `${users}` });
+
+          const query = `select username from users where mobile_no in (${users})`;
+          db.query(query, (err, result) => {
+            if (err) {
+              console.log(err);
+              res.json({ result: "no users" });
+            } else {
+              console.log("result is: ", ...result);
+              const list = result.map((i, index) => {
+                return {name: i.username, mobile: users[index] }
+              })
+              console.log("the final list asia conquerer is: ", list);
+              res.json({ result: list });
+            }
+          })
         }
       });
     }
@@ -227,8 +243,20 @@ io.on("connection", (socket) => {
         res.json({ result: "failure" });
       } else {
         console.log("responded to a request...");
-        res.json({ result: "success" });
       }
     })
+    if (req.body.response == "accepted") {
+      const id = uuid();
+      const query = `insert into conversation values ('${id}', '${req.body.sender_mobile}', '${req.body.reciever_mobile}')`;
+      db.query(query, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.json({ result: "failure" });
+        } else {
+          console.log("created a new conversation...");
+          res.json({ result: "success" });
+        }
+      })
+    }
   })
 })

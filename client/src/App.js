@@ -10,7 +10,7 @@ import { AppContext } from "./AppContext";
 
 function App() {
   const [contacts, setContacts] = React.useState([]);
-  const [currentContact, setCurrentContact] = React.useState(null);
+  const [currentContact, setCurrentContact] = React.useState({});
   const [userSocket, setuserSocket] = React.useState(null);
   const AppState = { contacts, setContacts, currentContact, setCurrentContact, userSocket, setuserSocket };
   return (

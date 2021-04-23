@@ -14,7 +14,19 @@ function TextPage() {
   const [commonMsg, setcommonMsg] = React.useState([]);
   const [requests, setRequests] = React.useState([]);
   const [requestList, setRequestList] = React.useState([]);
+  const [addFriendDisplay, setaddFriendDisplay] = React.useState("none");
+  const [pendingRequestDisplay, setpendingRequestDisplay] = React.useState("none");
+  const [chatsDisplay, setchatsDisplay] = React.useState("block");
 
+  const add_friendStyles = {
+    display: addFriendDisplay,
+  }
+
+  const pendingRequestStyles = {
+    display: pendingRequestDisplay,
+  }
+
+  // gets the list of all pending requests and displays it in the pending requests tab.
   useEffect(() => {
     //TODO - run this when the app loads
     let listOfRequests =
@@ -33,6 +45,7 @@ function TextPage() {
 
   }, [requests])
 
+  // whenever there is a new msg, updates the msg state 
   useEffect(() => {
 
     let unmounted = false;
@@ -56,6 +69,7 @@ function TextPage() {
     };
   }, [commonMsg]);
 
+  // accept or decline requests
   async function respond_request(status, sender) {
     console.log("in here");
     const res = await fetch("http://localhost:8080/respond_request", {
@@ -75,6 +89,7 @@ function TextPage() {
     }
   }
 
+  // sends the message to the user
   async function sendText() {
     const temp = [...commonMsg, { isSender: true, data: textValue }];
     setcommonMsg(temp);
@@ -101,12 +116,21 @@ function TextPage() {
     }
   }
 
+  // switches between different tabs
   function openTab(name) {
-    if (name == "request") {
-
+    if (name == "add_friend") {
+      setchatsDisplay("none");
+      setpendingRequestDisplay("none")
+      setaddFriendDisplay("flex");
+    } else if (name == "pending_requests") {
+      pending_requests();
+      setchatsDisplay("none");
+      setaddFriendDisplay("none");
+      setpendingRequestDisplay("block");
     }
   }
 
+  // gets and shows all the pending requests
   async function pending_requests() {
     const res = await fetch("http://localhost:8080/get_data", {
       method: "POST",
@@ -126,6 +150,7 @@ function TextPage() {
 
   }
 
+  // sends a friend request to the user with socket.
   async function searchContact() {
     userSocket.emit("sending_request", { sender_mobile: `${sessionStorage.getItem("loggedInUser")}`, reciever_mobile: `${friendsText}` });
   }
@@ -138,13 +163,13 @@ function TextPage() {
             <span className="my-profile">Sarthak</span>
           </div>
           <div className="options">
-            <button onClick={() => { pending_requests() }}><img src="/svg/add.svg" /></button>
-            <button><img src="/svg/friends.svg" /></button>
+            <button onClick={() => { openTab("add_friend") }}><img src="/svg/add.svg" /></button>
+            <button onClick={() => { openTab("pending_requests") }}><img src="/svg/friends.svg" /></button>
           </div>
         </div>
-        <ChatHead />
+        <ChatHead display={chatsDisplay} />
 
-        <div className="friends-section">
+        <div className="friends-section" style={add_friendStyles}>
           <div className="friends-innerdiv">
             <h3 className="friends-heading">Add your friends to the chat. Search using their unique mobile numbers.</h3>
             <input
@@ -161,7 +186,7 @@ function TextPage() {
           </div>
         </div>
 
-        <div className="pending_requests">
+        <div className="pending_requests" style={pendingRequestStyles}>
           {requestList}
         </div>
       </div>
@@ -176,7 +201,7 @@ function TextPage() {
 
           <img src="/images/pic_1.jpg" className="profile-img " />
           <a href="/home">
-            <h3 className="chat-title">{currentContact}</h3>
+            <h3 className="chat-title">{currentContact.name}</h3>
           </a>
 
           <img src="/svg/status.svg" className="status" />

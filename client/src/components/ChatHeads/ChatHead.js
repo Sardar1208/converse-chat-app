@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-
 import "./ChatHead.css";
 import { AppContext } from "../../AppContext";
 
-function ChatHead() {
+function ChatHead(props) {
   const history = useHistory();
   const [usersList, SetUsersList] = useState();
   const { contacts, setContacts, setCurrentContact, userSocket } = useContext(AppContext);
@@ -22,8 +22,8 @@ function ChatHead() {
     //where sender_mobile="8459566516" and req_status="accepted"
 
     const result = await res.json();
-    const newResult = result.result.split(",");
-    console.log(newResult);
+    console.log("the new result is::" ,result.result);
+    const newResult = result.result;
     setContacts(newResult);
     console.log("contacts = ", contacts);
     if (result.result != "no users") {
@@ -34,7 +34,7 @@ function ChatHead() {
               <img src="/images/pic_1.jpg" />
             </div>
             <div className="card-text">
-              <h1>{user}</h1>
+              <h1>{user.name}</h1>
               <span>
                 <img src="/svg/sent.svg" />
               </span>
@@ -50,7 +50,7 @@ function ChatHead() {
 
   function openChat() { }
 
-  return <div style={{display:"none"}}>{usersList}</div>;
+  return <div style={{display:props.display}}>{usersList}</div>;
 }
 
 export default ChatHead;
