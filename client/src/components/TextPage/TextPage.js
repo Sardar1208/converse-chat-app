@@ -1,16 +1,19 @@
 import React, { useEffect } from "react";
 import "./TextPage.css";
-import ChatHead from "../ChatHeads/ChatHead"
+import ChatHead from "../ChatHeads/ChatHead";
+import LeftNav from "../LeftNav/LeftNav";
+import RightNav from "../RightNav/RightNav";
+import FriendsDiv from "../FriendsDiv/FriendsDiv";
+import PendingRequests from "../PendingRequests/PendingRequests";
+import Messages from "../Messages/Messages";
 import { AppContext } from "../../AppContext";
 import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-router-dom";
+import ChatInput from "../ChatInput/ChatInput";
 
 function TextPage() {
   const history = useHistory();
-  const { currentContact, userSocket } = React.useContext(AppContext);
-  const [textValue, setTextValue] = React.useState("");
+  const { userSocket } = React.useContext(AppContext);
   const [friendsText, setfriendsText] = React.useState("");
-  const [msg, setMsg] = React.useState([]);
-  const [myMsg, setmyMsg] = React.useState([]);
   const [commonMsg, setcommonMsg] = React.useState([]);
   const [requests, setRequests] = React.useState([]);
   const [requestList, setRequestList] = React.useState([]);
@@ -25,25 +28,6 @@ function TextPage() {
   const pendingRequestStyles = {
     display: pendingRequestDisplay,
   }
-
-  // gets the list of all pending requests and displays it in the pending requests tab.
-  useEffect(() => {
-    //TODO - run this when the app loads
-    let listOfRequests =
-      requests.map((request) => {
-        return (
-          <div className="request-block">
-            <span>{request.sender_mobile}</span>
-            <div>
-              <button className="accept-btn" onClick={() => { respond_request("accepted", request.sender_mobile) }}><img src="/svg/sent.svg" /></button>
-              <button className="decline-btn" on onClick={() => { respond_request("declined", request.sender_mobile) }}><img src="/svg/cross.svg" /></button>
-            </div>
-          </div>
-        )
-      })
-    setRequestList(listOfRequests);
-
-  }, [requests])
 
   // whenever there is a new msg, updates the msg state 
   useEffect(() => {
@@ -89,33 +73,6 @@ function TextPage() {
     }
   }
 
-  // sends the message to the user
-  async function sendText() {
-    const temp = [...commonMsg, { isSender: true, data: textValue }];
-    setcommonMsg(temp);
-
-
-    const res = await fetch("http://localhost:8080/get_data", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        get: "socketID",
-      },
-      body: JSON.stringify({
-        username: `${currentContact}`,
-      }),
-    });
-    const result = await res.json();
-    if (result.result != "not found") {
-      userSocket.emit("texty", {
-        recieverID: `${result.result}`,
-        text: `${textValue}`,
-      });
-      // render chat page and remove this page
-      setTextValue("");
-    }
-  }
-
   // switches between different tabs
   function openTab(name) {
     if (name == "add_friend") {
@@ -158,79 +115,24 @@ function TextPage() {
   return (
     <div className="split-view">
       <div className="contacts-section">
-        <div className="left-navbar">
-          <div>
-            <span className="my-profile">Sarthak</span>
-          </div>
-          <div className="options">
-            <button onClick={() => { openTab("add_friend") }}><img src="/svg/add.svg" /></button>
-            <button onClick={() => { openTab("pending_requests") }}><img src="/svg/friends.svg" /></button>
-          </div>
-        </div>
+        <LeftNav function={openTab}/>
         <ChatHead display={chatsDisplay} />
 
         <div className="friends-section" style={add_friendStyles}>
-          <div className="friends-innerdiv">
-            <h3 className="friends-heading">Add your friends to the chat. Search using their unique mobile numbers.</h3>
-            <input
-              className="friends-input"
-              type="text"
-              placeholder="Search..."
-              width="100%"
-              onChange={(e) => {
-                setfriendsText(e.target.value);
-              }}
-              value={friendsText}
-            />
-            <button className="friends-button" onClick={searchContact}>Search</button>
-          </div>
+          <FriendsDiv friendsText={friendsText}  setfriendsText={setfriendsText} searchContact={searchContact} />
         </div>
 
         <div className="pending_requests" style={pendingRequestStyles}>
-          {requestList}
+          <PendingRequests requests={requests} requestList={requestList} setRequestList={setRequestList} respond_request={respond_request}/>
         </div>
       </div>
 
-
-
       <div className="chat-section">
-        <div className="my-navbar">
-          <button className="back-button">
-            <img src="/svg/back.svg" />
-          </button>
+        <RightNav />
 
-          <img src="/images/pic_1.jpg" className="profile-img " />
-          <a href="/home">
-            <h3 className="chat-title">{currentContact.name}</h3>
-          </a>
+        <Messages commonMsg={commonMsg} />
 
-          <img src="/svg/status.svg" className="status" />
-        </div>
-
-        <div className="messeges">
-          {commonMsg.map((value, key) => {
-            return (
-              <div key={key + "-" + value.data} className={value.isSender ? "my-text-box" : "text-box"}>
-                <span>{value.data}</span>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="input-section">
-          <input
-            type="text"
-            placeholder="Enter something..."
-            width="100%"
-            onChange={(e) => {
-              setTextValue(e.target.value);
-            }}
-            value={textValue}
-          />
-          <button className="send-button" onClick={sendText}>
-            Send <img src="/svg/send.svg" />
-          </button>
-        </div>
+        <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg}/>
       </div>
     </div>
   );

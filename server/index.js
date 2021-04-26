@@ -52,6 +52,23 @@ const io = socket(server, {
     methods: ["GET", "POST"],
   },
 });
+
+async function doQuery(query, res, cb, log_msg = "the result: ") {
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log(err);
+      if (res) {
+        res.json({ result: "success" });
+      }
+    } else {
+      console.log(`${log_msg}`, result);
+      if (cb) {
+        cb(result);
+      }
+    }
+  })
+}
+
 io.on("connection", (socket) => {
   console.log("connected", socket.id);
 
@@ -64,43 +81,17 @@ io.on("connection", (socket) => {
   socket.on("sending_request", (data) => {
     console.log("new friend request: ", data);
     const query = `select * from pendingrequests where sender_mobile='${data.sender_mobile}' and reciever_mobile='${data.reciever_mobile}'`;
-    db.query(query, (err, result) => {
-      if (err) {
-        console.log(err);
-
-      } else {
-        console.log("adding request to db...");
-        if (result.length == 0) {
-          const query = `insert into pendingrequests values("${data.sender_mobile}", "${data.reciever_mobile}", "pending")`;
-          db.query(query, (err, result) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log("inserted successfully");
-              const query = `select socket_ID from users where mobile_no='${data.reciever_mobile}'`;
-              db.query(query, (err, result) => {
-                if (err) {
-                  console.log(err);
-                } else {
-                  console.log("emmiting request to reciever with id: ", result[0]);
-                  socket.broadcast.to(`${result[0].socket_ID}`).emit("recieving_request", data);
-                }
-              })
-            }
-          })
-        }
+    doQuery(query, null, (result) => {
+      if (result.length == 0) {
+        const query = `insert into pendingrequests values("${data.sender_mobile}", "${data.reciever_mobile}", "pending")`;
+        doQuery(query);
+        const query2 = `select socket_ID from users where mobile_no='${data.reciever_mobile}'`;
+        doQuery(query2, null, (result) => {
+          console.log("emmiting request to reciever with id: ", result[0]);
+          socket.broadcast.to(`${result[0].socket_ID}`).emit("recieving_request", data);
+        })
       }
     })
-
-    // TODO - check if already sent request, if not add to db, get reciever socket id and emit to it.
-    // TODO - can this be done in single query or not.
-
-
-
-    // socket.broadcast.to()
-
-    //add this to database
-    //emit this to the reciever
 
     socket.on("disconnect", () => {
       console.log("client disconnected", socket.id);
@@ -119,144 +110,78 @@ io.on("connection", (socket) => {
   });
 
   app.post("/login_user", async (req, res) => {
-    console.log(req.body);
     const query = `select * from users where mobile_no="${req.body.mobile}"`;
-    db.query(query, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json({ result: "failure" });
+    await doQuery(query, res, (user) => {
+      console.log("result from returned place: ", user);
+      if (user.length != 0) {
+        const query = `UPDATE users SET socket_ID="${req.body.socketID}" WHERE mobile_no="${req.body.mobile}"`;
+        doQuery(query);
+        res.json({ result: "success" });
       } else {
-        if (result.length != 0) {
-          console.log(result);
-          const query = `UPDATE users SET socket_ID="${req.body.socketID}" WHERE mobile_no="${req.body.mobile}"`;
-          db.query(query, (err, result) => {
-            if (err) {
-              console.log(err);
-              res.json({ result: "failure" });
-            } else {
-              console.log(result);
-              res.json({ result: "success" });
-            }
-          });
-        } else {
-          console.log("query result: ", result);
-          res.json({ result: "new user" });
-        }
+        res.json({ result: "new user" });
       }
     });
   });
 
-  app.post("/user_details", (req, res) => {
-    console.log("the reqbody: ", req.body);
-    console.log("sdfsfs: ", parseInt(req.body.mobile));
+  app.post("/user_details", async (req, res) => {
     const query = `INSERT INTO users VALUES ('${req.body.email}','${req.body.username}','${req.body.mobile}', '${req.body.socket_ID}','offline')`;
-    db.query(query, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json({ result: "failure" });
-      } else {
-        res.json({ result: "success" });
-        console.log("the later result: ", result)
-      }
-    })
-  })
+    await doQuery(query, res);
+    res.json({ result: "success" });
+  });
 
   app.post("/get_data", (req, res) => {
-    console.log(req.headers.get);
     if (req.headers.get == "users") {
       const query = `select sender_ID, reciever_ID from conversation where sender_ID="${req.body.reciever_mobile}" or reciever_ID="${req.body.reciever_mobile}"`;
-      db.query(query, (err, result) => {
-        if (err) {
-          console.log(err);
-          res.json({ result: "no users" });
-        } else {
+      doQuery(query, res, (result) => {
+        if (result.length != 0) {
           let users = result.map((item) => {
-            console.log("from map: ", item)
             if (item.sender_ID == req.body.reciever_mobile) {
               return item.reciever_ID;
             } else {
               return item.sender_ID;
             }
           });
-
           const query = `select username from users where mobile_no in (${users})`;
-          db.query(query, (err, result) => {
-            if (err) {
-              console.log(err);
-              res.json({ result: "no users" });
-            } else {
-              console.log("result is: ", ...result);
-              const list = result.map((i, index) => {
-                return {name: i.username, mobile: users[index] }
-              })
-              console.log("the final list asia conquerer is: ", list);
-              res.json({ result: list });
-            }
+          doQuery(query, res, (result) => {
+            const list = result.map((i, index) => {
+              return { name: i.username, mobile: users[index] }
+            })
+            res.json({ result: list });
           })
+        } else{
+          res.json({ result: "no users" });
         }
-      });
+      })
     }
     else if (req.headers.get == "socketID") {
       const query = `select SocketID from UserSocketTable WHERE Username="${req.body.username}"`;
-      db.query(query, (err, result) => {
-        if (err) {
-          console.log(err);
-          res.json({ result: "not found" });
-        } else {
-          console.log(result);
-          res.json({ result: `${result[0].SocketID}` });
-        }
-      });
+      doQuery(query, res, (result) => {
+        res.json({ result: `${result[0].SocketID}` });
+      })
     }
     else if (req.headers.get == "user_contact") {
       const query = `select Username from users where mobile_no="${req.body.mobile}"`;
-      db.query(query, (err, result) => {
-        if (err) {
-          console.log(err);
-          res.json({ result: "failure" });
-        } else {
-          console.log("search result: ", result);
-          res.json({ result: result });
-        }
+      doQuery(query, res, (result) => {
+        res.json({ result: result });
       })
     }
     else if (req.headers.get == "pending_requests") {
       const query = `select sender_mobile from pendingrequests where reciever_mobile="${req.body.mobile}" and req_status="pending"`;
-      db.query(query, (err, result) => {
-        if (err) {
-          console.log(err);
-          res.json({ result: "failure" });
-        } else {
-          console.log("requests pending: ", result);
-          res.json({ result: result });
-        }
+      doQuery(query, res, (result) => {
+        res.json({ result: result });
       })
     }
-
   });
 
   app.post("/respond_request", (req, res) => {
     const query = `update pendingrequests set req_status='${req.body.response}' where sender_mobile='${req.body.sender_mobile}' and reciever_mobile='${req.body.reciever_mobile}'`
-    db.query(query, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json({ result: "failure" });
-      } else {
-        console.log("responded to a request...");
-      }
-    })
+    doQuery(query, res);
     if (req.body.response == "accepted") {
       const id = uuid();
       const query = `insert into conversation values ('${id}', '${req.body.sender_mobile}', '${req.body.reciever_mobile}')`;
-      db.query(query, (err, result) => {
-        if (err) {
-          console.log(err);
-          res.json({ result: "failure" });
-        } else {
-          console.log("created a new conversation...");
-          res.json({ result: "success" });
-        }
+      doQuery(query, res, (result) => {
+        res.json({ result: "success" });
       })
     }
   })
-})
+});
