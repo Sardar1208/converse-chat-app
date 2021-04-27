@@ -6,7 +6,7 @@ import { AppContext } from "../../AppContext";
 function ChatHead(props) {
   const history = useHistory();
   const [usersList, SetUsersList] = useState();
-  const { contacts, setContacts, setCurrentContact, userSocket } = useContext(AppContext);
+  const { contacts, setContacts, setCurrentContact, userSocket, currentContact } = useContext(AppContext);
   useEffect(async () => {
 
     const res = await fetch("http://localhost:8080/get_data", {
@@ -29,7 +29,7 @@ function ChatHead(props) {
     if (result.result != "no users") {
       let List = newResult.map((user) => {
         return (
-          <div className="chat-head" onClick={() => setCurrentContact(user)}>
+          <div className="chat-head" onClick={() => {setCurrentContact(user); props.loadMessages(user.conversation_ID)}}>
             <div className="card-img">
               <img src="/images/pic_1.jpg" />
             </div>

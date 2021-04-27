@@ -75,7 +75,11 @@ io.on("connection", (socket) => {
   socket.on("texty", (data) => {
     console.log("text recieved: ", data);
 
-    socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", `${data.text}`);
+    socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", {text: `${data.text}`, sender_ID: `${data.sender_ID}`});
+    const query = `insert into messages(msg, msg_time, conversation_ID, sender_ID) values ('${data.text}', '${Date.now()}', '${data.conversation_ID}', '${data.sender_ID}')`;
+    doQuery(query, null, (result) => {
+      console.log("saved");
+    })
   })
 
   socket.on("sending_request", (data) => {
@@ -131,7 +135,7 @@ io.on("connection", (socket) => {
 
   app.post("/get_data", (req, res) => {
     if (req.headers.get == "users") {
-      const query = `select sender_ID, reciever_ID from conversation where sender_ID="${req.body.reciever_mobile}" or reciever_ID="${req.body.reciever_mobile}"`;
+      const query = `select * from conversation where sender_ID="${req.body.reciever_mobile}" or reciever_ID="${req.body.reciever_mobile}"`;
       doQuery(query, res, (result) => {
         if (result.length != 0) {
           let users = result.map((item) => {
@@ -141,22 +145,33 @@ io.on("connection", (socket) => {
               return item.sender_ID;
             }
           });
-          const query = `select username from users where mobile_no in (${users})`;
-          doQuery(query, res, (result) => {
-            const list = result.map((i, index) => {
-              return { name: i.username, mobile: users[index] }
-            })
-            res.json({ result: list });
+          const query = `select username,mobile_no from users where mobile_no in (${users})`;
+          doQuery(query, res, async (theresult) => {
+            let temp_detail = [];
+            for (let i of theresult) {
+              const query = `select conversation_ID from conversation where sender_ID in (${req.body.reciever_mobile}, ${i.mobile_no}) and reciever_ID in (${req.body.reciever_mobile}, ${i.mobile_no})`;
+              db.query(query, (err, result) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  temp_detail.push({ name: i.username, mobile: i.mobile_no, conversation_ID: result[0].conversation_ID });
+                  console.log("for loop  gives us: ", temp_detail);
+                  if (temp_detail.length == theresult.length) {
+                    res.json({ result: temp_detail });
+                  }
+                }
+              })
+            }
           })
-        } else{
+        } else {
           res.json({ result: "no users" });
         }
-      })
+      }, "this is it")
     }
     else if (req.headers.get == "socketID") {
-      const query = `select SocketID from UserSocketTable WHERE Username="${req.body.username}"`;
+      const query = `select socket_ID from users WHERE mobile_no="${req.body.reciever_mobile}"`;
       doQuery(query, res, (result) => {
-        res.json({ result: `${result[0].SocketID}` });
+        res.json({ result: `${result[0].socket_ID}` });
       })
     }
     else if (req.headers.get == "user_contact") {
@@ -167,6 +182,12 @@ io.on("connection", (socket) => {
     }
     else if (req.headers.get == "pending_requests") {
       const query = `select sender_mobile from pendingrequests where reciever_mobile="${req.body.mobile}" and req_status="pending"`;
+      doQuery(query, res, (result) => {
+        res.json({ result: result });
+      })
+    }
+    else if (req.headers.get == "messages") {
+      const query = `select * from messages where conversation_ID="${req.body.conversation_ID}"`;
       doQuery(query, res, (result) => {
         res.json({ result: result });
       })

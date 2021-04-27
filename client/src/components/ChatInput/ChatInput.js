@@ -7,7 +7,7 @@ function ChatInput(props) {
     const [textValue, setTextValue] = React.useState("");
 
     async function sendText() {
-        const temp = [...props.commonMsg, { isSender: true, data: textValue }];
+        const temp = [...props.commonMsg, { sender: "me", data: textValue }];
         props.setcommonMsg(temp);
 
 
@@ -18,7 +18,7 @@ function ChatInput(props) {
                 get: "socketID",
             },
             body: JSON.stringify({
-                username: `${currentContact}`,
+                reciever_mobile: `${currentContact.mobile}`,
             }),
         });
         const result = await res.json();
@@ -26,6 +26,9 @@ function ChatInput(props) {
             userSocket.emit("texty", {
                 recieverID: `${result.result}`,
                 text: `${textValue}`,
+                reciever_mobile: `${currentContact.mobile}`,
+                conversation_ID: `${currentContact.conversation_ID}`,
+                sender_ID: `${sessionStorage.getItem("loggedInUser")}`,
             });
             // render chat page and remove this page
             setTextValue("");

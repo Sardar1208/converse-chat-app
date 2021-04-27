@@ -39,7 +39,7 @@ function TextPage() {
         history.push("/login");
       } else {
         userSocket.on("incoming-text", (data) => {
-          let temp = [...commonMsg, { isSender: false, data: data }];
+          let temp = [...commonMsg, { sender: data.sender_ID, data: data.text }];
           setcommonMsg(temp);
         });
         userSocket.on("recieving_request", (data) => {
@@ -87,6 +87,35 @@ function TextPage() {
     }
   }
 
+  async function loadMessages(conversation_ID) {
+    const user = sessionStorage.getItem("loggedInUser");
+    const res = await fetch("http://localhost:8080/get_data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        get: "messages",
+      },
+      body: JSON.stringify({
+        conversation_ID: `${conversation_ID}`,
+      }),
+    });
+    const result = await res.json();
+    if (result.result != "no messages") {
+      console.log("sfslkjdlsakfs;fslkajflfja;lk")
+      const texts = result.result.map((text) => {
+        let sender = "";
+        if (text.sender_ID == user) {
+          sender = "me";
+        } else {
+          sender = text.sender_ID;
+        }
+        return { sender: `${sender}`, data: `${text.msg}` }
+      })
+      console.log("the final texts are: ", texts);
+      setcommonMsg(texts);
+    }
+  }
+
   // gets and shows all the pending requests
   async function pending_requests() {
     const res = await fetch("http://localhost:8080/get_data", {
@@ -115,15 +144,15 @@ function TextPage() {
   return (
     <div className="split-view">
       <div className="contacts-section">
-        <LeftNav function={openTab}/>
-        <ChatHead display={chatsDisplay} />
+        <LeftNav function={openTab} />
+        <ChatHead display={chatsDisplay} loadMessages={loadMessages} />
 
         <div className="friends-section" style={add_friendStyles}>
-          <FriendsDiv friendsText={friendsText}  setfriendsText={setfriendsText} searchContact={searchContact} />
+          <FriendsDiv friendsText={friendsText} setfriendsText={setfriendsText} searchContact={searchContact} />
         </div>
 
         <div className="pending_requests" style={pendingRequestStyles}>
-          <PendingRequests requests={requests} requestList={requestList} setRequestList={setRequestList} respond_request={respond_request}/>
+          <PendingRequests requests={requests} requestList={requestList} setRequestList={setRequestList} respond_request={respond_request} />
         </div>
       </div>
 
@@ -132,7 +161,7 @@ function TextPage() {
 
         <Messages commonMsg={commonMsg} />
 
-        <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg}/>
+        <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg} />
       </div>
     </div>
   );
