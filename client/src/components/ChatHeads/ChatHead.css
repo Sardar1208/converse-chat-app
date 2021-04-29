@@ -10,6 +10,11 @@
 }
 .card-text{
     margin-left: 1rem;
+    display: flex;
+    /* justify-content:space-around; */
+}
+.unread{
+    justify-self: center;
 }
 .card-text h1{
     font-size: 2rem;

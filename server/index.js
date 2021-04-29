@@ -158,7 +158,11 @@ io.on("connection", (socket) => {
   });
 
   app.post("/get_data", (req, res) => {
+
+    //returns the detailed list of all contacts in form (name, mobile, conversation_ID)
     if (req.headers.get == "users") {
+
+      // get the list of all our contacts and make an array of their mobile numbers.
       const query = `select * from conversation where sender_ID="${req.body.reciever_mobile}" or reciever_ID="${req.body.reciever_mobile}"`;
       doQuery(query, res, (result) => {
         if (result.length != 0) {
@@ -169,17 +173,22 @@ io.on("connection", (socket) => {
               return item.sender_ID;
             }
           });
+
+          // from the above array, get their username.
           const query = `select username,mobile_no from users where mobile_no in (${users})`;
           doQuery(query, res, async (theresult) => {
             let temp_detail = [];
+
+            // traverse through the mobile number array, and get their conversation_ID
             for (let i of theresult) {
               const query = `select conversation_ID from conversation where sender_ID in (${req.body.reciever_mobile}, ${i.mobile_no}) and reciever_ID in (${req.body.reciever_mobile}, ${i.mobile_no})`;
               db.query(query, (err, result) => {
                 if (err) {
                   console.log(err);
                 } else {
+
+                  // make a detailed array of each contact and return to the client
                   temp_detail.push({ name: i.username, mobile: i.mobile_no, conversation_ID: result[0].conversation_ID });
-                  // console.log("for loop  gives us: ", temp_detail);
                   if (temp_detail.length == theresult.length) {
                     res.json({ result: temp_detail });
                   }
@@ -210,28 +219,50 @@ io.on("connection", (socket) => {
         res.json({ result: result });
       })
     }
+    // gets the past messages + pending messages(if any)
+    // also transfers texts from pending_queue to messages table when seen.
     else if (req.headers.get == "messages") {
+
+      // get all the past messages
       const query = `select * from messages where conversation_ID="${req.body.conversation_ID}"`;
       doQuery(query, res, (result) => {
-        // res.json({ result: result });
+
+        // get all the pending messages
         const query2 = `select * from pending_queue where conversation_ID="${req.body.conversation_ID}"`;
         doQuery(query2, res, (result2) => {
-          console.log("this is result2: ", result2.length);
+
+          //if you are the reciever of the pendding messages, make the transfer
           if (result2.length > 0 && result2[0].sender_ID != req.body.sender_ID) {
             const ms = result2.map((i) => {
+
+              // insert the pending messages into the messages table
               const query3 = `insert into messages(conversation_ID, msg, msg_time, sender_ID) values ('${i.conversation_ID}', '${i.msg}', '${i.msg_time}', '${i.sender_ID}')`;
               doQuery(query3);
             });
             console.log("inserted pending messages to regular messages table successfully...");
+
+            // delete the pending messages
             const query4 = `delete from pending_queue where conversation_ID="${req.body.conversation_ID}"`;
             doQuery(query4);
-            console.log("this is ms: ", ms[0]);
           }
           res.json({ result: "success", messages: result, pending_messages: result2 });
         })
-        //TODO elete the entries from pending_queue.
-
       })
+    }
+    // bhosdiwala madarchod code
+    else if (req.headers.get == "pending_messages") {
+      console.log("pending messages to get are: ", req.body.conversation_IDs);
+      let resultList = [];
+      for (id of req.body.conversation_IDs) {
+        const query = `select count(*) as unread_count, conversation_ID from pending_queue where conversation_ID='${id}' and sender_ID not in('${req.body.sender_ID}') group by conversation_ID`;
+        doQuery(query, res, (result) => {
+          resultList.push(result);
+          if (req.body.conversation_IDs.length == resultList.length) {
+            console.log("resultList: ", resultList);
+            res.json({ result: resultList });
+          }
+        }, "the fukin result: ")
+      }
     }
   });
 

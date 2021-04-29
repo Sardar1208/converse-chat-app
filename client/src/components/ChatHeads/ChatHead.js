@@ -25,33 +25,54 @@ function ChatHead(props) {
     if (result.result != "failure") {
       console.log("the new result is::", result.result);
 
-      // const res2 = await fetch("http://localhost:8080/get_data", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     'get': "pending_messages",
-      //   },
-      //   body: JSON.stringify({
-      //     conversation_ID,
-      //   }),
-      // });
+      const convoIds = result.result.map((i) => {
+        return i.conversation_ID;
+      })
+      const res2 = await fetch("http://localhost:8080/get_data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'get': "pending_messages",
+        },
+        body: JSON.stringify({
+          conversation_IDs: convoIds,
+          sender_ID: sessionStorage.getItem("loggedInUser"),
+        }),
+      });
+      let result2 = await res2.json();
+      
+      //TODO - make the unreadmessages frontend
 
       const newResult = result.result;
       setContacts(newResult);
       console.log("contacts = ", contacts);
       if (result.result != "no users") {
         let List = newResult.map((user) => {
+
+          // calculate the number of unread messages for the given contact and display it.
+          let count = 0;
+          for(let i of result2.result){
+            if(i[0] && i[0].conversation_ID == user.conversation_ID){
+              console.log("got it finally mf");
+              count = i[0].unread_count;
+            }
+          }
           return (
             <div className="chat-head" onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID) }}>
               <div className="card-img">
                 <img src="/images/pic_1.jpg" />
               </div>
               <div className="card-text">
-                <h1>{user.name}</h1>
-                <span>
-                  <img src="/svg/sent.svg" />
-                </span>
-                <h5>This is your last text...</h5>
+                <div className ="text-body">
+                  <h1>{user.name}</h1>
+                  <span>
+                    <img src="/svg/sent.svg" />
+                  </span>
+                  <h5>This is your last text...</h5>
+                </div>
+                <div className="unread">
+                  <span>{count}</span>
+                </div>
               </div>
               <hr />
             </div>
