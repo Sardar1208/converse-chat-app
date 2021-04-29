@@ -15,6 +15,7 @@ function TextPage() {
   const { userSocket } = React.useContext(AppContext);
   const [friendsText, setfriendsText] = React.useState("");
   const [commonMsg, setcommonMsg] = React.useState([]);
+  const [pendingMsg, setpendingMsg] = React.useState([]);
   const [requests, setRequests] = React.useState([]);
   const [requestList, setRequestList] = React.useState([]);
   const [addFriendDisplay, setaddFriendDisplay] = React.useState("none");
@@ -97,12 +98,13 @@ function TextPage() {
       },
       body: JSON.stringify({
         conversation_ID: `${conversation_ID}`,
+        sender_ID: `${user}`,
       }),
     });
     const result = await res.json();
-    if (result.result != "no messages") {
-      console.log("sfslkjdlsakfs;fslkajflfja;lk")
-      const texts = result.result.map((text) => {
+    if (result.result == "success") {
+      console.log("messages in this convo: ", result)
+      const texts = result.messages.map((text) => {
         let sender = "";
         if (text.sender_ID == user) {
           sender = "me";
@@ -110,8 +112,19 @@ function TextPage() {
           sender = text.sender_ID;
         }
         return { sender: `${sender}`, data: `${text.msg}` }
-      })
+      });
+
+      const pending_texts = result.pending_messages.map((text) => {
+        let sender = "";
+        if (text.sender_ID == user) {
+          sender = "me";
+        } else {
+          sender = text.sender_ID;
+        }
+        return { sender: `${sender}`, data: `${text.msg}` }
+      });
       console.log("the final texts are: ", texts);
+      setpendingMsg(pending_texts);
       setcommonMsg(texts);
     }
   }
@@ -159,7 +172,7 @@ function TextPage() {
       <div className="chat-section">
         <RightNav />
 
-        <Messages commonMsg={commonMsg} />
+        <Messages commonMsg={commonMsg} pendingMsg={pendingMsg} className="messages_section"/>
 
         <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg} />
       </div>

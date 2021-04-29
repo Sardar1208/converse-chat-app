@@ -22,35 +22,50 @@ function ChatHead(props) {
     //where sender_mobile="8459566516" and req_status="accepted"
 
     const result = await res.json();
-    console.log("the new result is::" ,result.result);
-    const newResult = result.result;
-    setContacts(newResult);
-    console.log("contacts = ", contacts);
-    if (result.result != "no users") {
-      let List = newResult.map((user) => {
-        return (
-          <div className="chat-head" onClick={() => {setCurrentContact(user); props.loadMessages(user.conversation_ID)}}>
-            <div className="card-img">
-              <img src="/images/pic_1.jpg" />
+    if (result.result != "failure") {
+      console.log("the new result is::", result.result);
+
+      // const res2 = await fetch("http://localhost:8080/get_data", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     'get': "pending_messages",
+      //   },
+      //   body: JSON.stringify({
+      //     conversation_ID,
+      //   }),
+      // });
+
+      const newResult = result.result;
+      setContacts(newResult);
+      console.log("contacts = ", contacts);
+      if (result.result != "no users") {
+        let List = newResult.map((user) => {
+          return (
+            <div className="chat-head" onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID) }}>
+              <div className="card-img">
+                <img src="/images/pic_1.jpg" />
+              </div>
+              <div className="card-text">
+                <h1>{user.name}</h1>
+                <span>
+                  <img src="/svg/sent.svg" />
+                </span>
+                <h5>This is your last text...</h5>
+              </div>
+              <hr />
             </div>
-            <div className="card-text">
-              <h1>{user.name}</h1>
-              <span>
-                <img src="/svg/sent.svg" />
-              </span>
-              <h5>This is your last text...</h5>
-            </div>
-            <hr />
-          </div>
-        );
-      });
-      SetUsersList(List);
+          );
+        });
+        SetUsersList(List);
+      }
     }
+
   }, []);
 
   function openChat() { }
 
-  return <div style={{display:props.display}}>{usersList}</div>;
+  return <div style={{ display: props.display }}>{usersList}</div>;
 }
 
 export default ChatHead;

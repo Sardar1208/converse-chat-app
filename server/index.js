@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const { query } = require("express");
 const { v4: uuid } = require('uuid');
+// const { Socket } = require("dgram");
 dotenv.config();
 // const userSocketDB = require("./user-socket.js");
 const db = mysql.createConnection({
@@ -72,14 +73,35 @@ async function doQuery(query, res, cb, log_msg = "the result: ") {
 io.on("connection", (socket) => {
   console.log("connected", socket.id);
 
+  // runs whenever a msg is sent
+  // sends the msg to reciever if online otherwise, puts it in pending_quere
   socket.on("texty", (data) => {
     console.log("text recieved: ", data);
+    let idFound = false;
 
-    socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", {text: `${data.text}`, sender_ID: `${data.sender_ID}`});
-    const query = `insert into messages(msg, msg_time, conversation_ID, sender_ID) values ('${data.text}', '${Date.now()}', '${data.conversation_ID}', '${data.sender_ID}')`;
-    doQuery(query, null, (result) => {
-      console.log("saved");
-    })
+    // loops through all connected sockets and checks if the reciever is connected(online) or not.
+    for (const [_, socket] of io.of("/").sockets) {
+      console.log("conn sockets: ", _);
+      if (_ == data.recieverID) {
+        console.log("found");
+        idFound = true;
+      }
+    }
+    // if online, sends the message directly.
+    if (idFound == true) {
+      socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", { text: `${data.text}`, sender_ID: `${data.sender_ID}` });
+      const query = `insert into messages(msg, msg_time, conversation_ID, sender_ID) values ('${data.text}', '${Date.now()}', '${data.conversation_ID}', '${data.sender_ID}')`;
+      doQuery(query, null, (result) => {
+        console.log("saved");
+      })
+      // if offline, saves the message in the pending_queue table.
+    } else {
+      console.log("going into pending table...");
+      const query = `insert into pending_queue(conversation_ID, msg, msg_time, sender_ID) values ('${data.conversation_ID}', '${data.text}', '${Date.now()}', '${data.sender_ID}')`;
+      doQuery(query, null, (result) => {
+        console.log("savedin pending table");
+      })
+    }
   })
 
   socket.on("sending_request", (data) => {
@@ -98,7 +120,9 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
-      console.log("client disconnected", socket.id);
+      console.log("client disconnected");
+      // const query = `UPDATE users SET current_status="offline" WHERE socket_ID="${socket.id}"`;
+      // doQuery(query); 
     });
   });
 
@@ -118,7 +142,7 @@ io.on("connection", (socket) => {
     await doQuery(query, res, (user) => {
       console.log("result from returned place: ", user);
       if (user.length != 0) {
-        const query = `UPDATE users SET socket_ID="${req.body.socketID}" WHERE mobile_no="${req.body.mobile}"`;
+        const query = `UPDATE users SET socket_ID="${req.body.socketID}", current_status="online" WHERE mobile_no="${req.body.mobile}"`;
         doQuery(query);
         res.json({ result: "success" });
       } else {
@@ -155,7 +179,7 @@ io.on("connection", (socket) => {
                   console.log(err);
                 } else {
                   temp_detail.push({ name: i.username, mobile: i.mobile_no, conversation_ID: result[0].conversation_ID });
-                  console.log("for loop  gives us: ", temp_detail);
+                  // console.log("for loop  gives us: ", temp_detail);
                   if (temp_detail.length == theresult.length) {
                     res.json({ result: temp_detail });
                   }
@@ -189,7 +213,24 @@ io.on("connection", (socket) => {
     else if (req.headers.get == "messages") {
       const query = `select * from messages where conversation_ID="${req.body.conversation_ID}"`;
       doQuery(query, res, (result) => {
-        res.json({ result: result });
+        // res.json({ result: result });
+        const query2 = `select * from pending_queue where conversation_ID="${req.body.conversation_ID}"`;
+        doQuery(query2, res, (result2) => {
+          console.log("this is result2: ", result2.length);
+          if (result2.length > 0 && result2[0].sender_ID != req.body.sender_ID) {
+            const ms = result2.map((i) => {
+              const query3 = `insert into messages(conversation_ID, msg, msg_time, sender_ID) values ('${i.conversation_ID}', '${i.msg}', '${i.msg_time}', '${i.sender_ID}')`;
+              doQuery(query3);
+            });
+            console.log("inserted pending messages to regular messages table successfully...");
+            const query4 = `delete from pending_queue where conversation_ID="${req.body.conversation_ID}"`;
+            doQuery(query4);
+            console.log("this is ms: ", ms[0]);
+          }
+          res.json({ result: "success", messages: result, pending_messages: result2 });
+        })
+        //TODO elete the entries from pending_queue.
+
       })
     }
   });

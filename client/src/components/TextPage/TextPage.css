@@ -15,6 +15,7 @@
 .chat-section{
     display: grid;
     grid-template-rows: 10% 80% 10%;
+    /* overflow: scroll; */
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
@@ -190,4 +191,7 @@ hr{
 }
 .decline-btn{
     background-color: rgba(209, 79, 70, 0.836);
+}
+.messages_section{
+    overflow:visible;
 }
