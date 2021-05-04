@@ -21,6 +21,7 @@ function TextPage() {
   const [addFriendDisplay, setaddFriendDisplay] = React.useState("none");
   const [pendingRequestDisplay, setpendingRequestDisplay] = React.useState("none");
   const [chatsDisplay, setchatsDisplay] = React.useState("block");
+  const [pending_text_in, setPending_text_in] = React.useState(true);
 
   const add_friendStyles = {
     display: addFriendDisplay,
@@ -43,6 +44,12 @@ function TextPage() {
           let temp = [...commonMsg, { sender: data.sender_ID, data: data.text }];
           setcommonMsg(temp);
         });
+        userSocket.on("incoming-pending-text", (data) => {
+          //TODO - this signal is not working fix this
+          // TODO - re render chat head on this signal
+          console.log("got it asuna weeb");
+          setPending_text_in(!pending_text_in);
+        })
         userSocket.on("recieving_request", (data) => {
           console.log("got a new friend request: ", data);
         })
@@ -53,6 +60,22 @@ function TextPage() {
       unmounted = true;
     };
   }, [commonMsg]);
+
+  // async function refresh_chatHead() {
+  //   const res = await fetch("http://localhost:8080/get_data", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "get": "pending_messages",
+  //     },
+  //     body: JSON.stringify({
+  //       sender_mobile: `${sender}`,
+  //       reciever_mobile: sessionStorage.getItem("loggedInUser"),
+  //       response: status,
+  //     }),
+  //   });
+  //   const result = await res.json();
+  // }
 
   // accept or decline requests
   async function respond_request(status, sender) {
@@ -158,7 +181,7 @@ function TextPage() {
     <div className="split-view">
       <div className="contacts-section">
         <LeftNav function={openTab} />
-        <ChatHead display={chatsDisplay} loadMessages={loadMessages} />
+        <ChatHead display={chatsDisplay} loadMessages={loadMessages} pending_text_in={pending_text_in} />
 
         <div className="friends-section" style={add_friendStyles}>
           <FriendsDiv friendsText={friendsText} setfriendsText={setfriendsText} searchContact={searchContact} />
@@ -172,7 +195,7 @@ function TextPage() {
       <div className="chat-section">
         <RightNav />
 
-        <Messages commonMsg={commonMsg} pendingMsg={pendingMsg} className="messages_section"/>
+        <Messages commonMsg={commonMsg} pendingMsg={pendingMsg} className="messages_section" />
 
         <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg} />
       </div>
