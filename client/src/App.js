@@ -12,6 +12,7 @@ function App() {
   const [contacts, setContacts] = React.useState([]);
   const [currentContact, setCurrentContact] = React.useState({});
   const [userSocket, setuserSocket] = React.useState(null);
+  // const []
   const AppState = { contacts, setContacts, currentContact, setCurrentContact, userSocket, setuserSocket };
   return (
     <AppContext.Provider value={AppState}>

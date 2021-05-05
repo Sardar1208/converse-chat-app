@@ -72,14 +72,14 @@ function ChatHead(props) {
   useEffect(() => {
     console.log("getting unread count");
     getUnreadCount();
-  }, [conversationIds])
+  }, [conversationIds, props.commonMsg])
 
   useEffect(() => {
     console.log("making final list");
     let list = contacts.map((user) => {
       console.log("dog cat: ", unreadCount['d23febf4-9cb1-49cc-a35d-6f10a61172b3']);
       return (
-        <div className="chat-head" onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID); openChat(user.mobile); getUnreadCount();}}>
+        <div className="chat-head" onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID); openChat(user.mobile);}}>
           <div className="card-img">
             <img src="/images/pic_1.jpg" />
           </div>

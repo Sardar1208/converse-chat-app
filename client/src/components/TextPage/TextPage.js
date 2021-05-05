@@ -181,7 +181,7 @@ function TextPage() {
     <div className="split-view">
       <div className="contacts-section">
         <LeftNav function={openTab} />
-        <ChatHead display={chatsDisplay} loadMessages={loadMessages} pending_text_in={pending_text_in} />
+        <ChatHead display={chatsDisplay} loadMessages={loadMessages} commonMsg={commonMsg} />
 
         <div className="friends-section" style={add_friendStyles}>
           <FriendsDiv friendsText={friendsText} setfriendsText={setfriendsText} searchContact={searchContact} />
