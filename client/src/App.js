@@ -8,12 +8,27 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AppContext } from "./AppContext";
 
+function Test() {
+  return (
+    <div className="bg-cyan-400 m-8 p-8 text-white font-bold text-center text-4xl">
+      {" "}
+      Testing Tailwind (Check App.js Test Component)
+    </div>
+  );
+}
 function App() {
   const [contacts, setContacts] = React.useState([]);
   const [currentContact, setCurrentContact] = React.useState({});
   const [userSocket, setuserSocket] = React.useState(null);
   // const []
-  const AppState = { contacts, setContacts, currentContact, setCurrentContact, userSocket, setuserSocket };
+  const AppState = {
+    contacts,
+    setContacts,
+    currentContact,
+    setCurrentContact,
+    userSocket,
+    setuserSocket,
+  };
   return (
     <AppContext.Provider value={AppState}>
       <Router>
@@ -29,6 +44,7 @@ function App() {
         </div>
 
         <Switch>
+          <Route path="/" component={Test} />
           <Route path="/login" component={Login} />
           <Route path="/textPage" component={TextPage} />
           {/* <Route path="/chatHead" component={ChatHead} /> */}
