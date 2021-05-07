@@ -32,17 +32,40 @@
   /* Hide scrollbar for IE, Edge and Firefox */
 .input-section{
     background-color: white;
+    display: flex;
+    justify-content: start;
 }
 .input-section input{
+    justify-self: center;
+    align-self: center;
     outline: none;
     background-color: #dee3de;
-    width: 70%;
+    width: 80%;
     font-size: 1.5rem;
     border: none;
     border-radius: 5rem;
     margin: 1rem;
-    padding-left: 0.5rem;
+    padding-left: 1rem;
+    /* padding-top: 1rem;
+    padding-bottom: 1rem; */
     border-color: black;
+}
+.unread-messages{
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.unread-messages div {
+    letter-spacing: 1px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    display: inline-block;
+    /* color: rgb(121, 121, 233); */
+    padding: 0.25rem;
+    font-weight: bold;
+    /* border-radius: 5rem; */
+    border-left: 5px solid rgb(121, 121, 233) ;
+    /* border-right: 2px solid black ; */
+    
 }
 .friends-innerdiv{
     margin: auto;
@@ -84,7 +107,7 @@
     padding-left: 1rem;
 }
 .input-section input:focus{
-    border: 2px solid black;
+    border: 2px solid rgb(121, 121, 233);
 }
 .my-navbar{
     background-color: white;
@@ -122,6 +145,8 @@
     width: 1.5rem;
 }
 .send-button{
+    justify-self: center;
+    align-self: center;
     background-color: rgb(121, 121, 233);
     border: none;
     border-radius: 5rem;

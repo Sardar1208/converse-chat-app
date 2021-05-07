@@ -44,6 +44,9 @@ function ChatHead(props) {
 
   useEffect(async () => {
     console.log("getting contacts");
+
+
+
     //get all the contacts
     const res = await fetch("http://localhost:8080/get_data", {
       method: "POST",
@@ -58,7 +61,7 @@ function ChatHead(props) {
 
     const result = await res.json();
     setContacts(result.result);
-    if (result.result != "failure") {
+    if (result.result != "no users") {
       console.log("the new result is::", result.result);
 
       const convoIds = result.result.map((i) => {
@@ -72,36 +75,41 @@ function ChatHead(props) {
   useEffect(() => {
     console.log("getting unread count");
     getUnreadCount();
-  }, [conversationIds, props.commonMsg])
+  }, [conversationIds, props.commonMsg, props.pending_text_in])
 
   useEffect(() => {
-    console.log("making final list");
-    let list = contacts.map((user) => {
-      console.log("dog cat: ", unreadCount['d23febf4-9cb1-49cc-a35d-6f10a61172b3']);
-      return (
-        <div className="chat-head" onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID); openChat(user.mobile);}}>
-          <div className="card-img">
-            <img src="/images/pic_1.jpg" />
-          </div>
-          <div className="card-text">
-            <div className="text-body">
-              <h1>{user.name}</h1>
-              <span>
-                <img src="/svg/sent.svg" />
-              </span>
-              <h5>This is your last text...</h5>
+    console.log("making final list", contacts);
+    if (contacts.length > 0 && contacts != "no users") {
+      console.log("why in there")
+      let list = contacts.map((user) => {
+        console.log("dog cat: ", unreadCount['d23febf4-9cb1-49cc-a35d-6f10a61172b3']);
+        return (
+          <div className="chat-head" onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID); openChat(user.mobile); }}>
+            <div className="card-img">
+              <img src="/images/pic_1.jpg" />
+            </div>
+            <div className="card-text">
+              <div className="text-body">
+                <h1>{user.name}</h1>
+                <span>
+                  <img src="/svg/sent.svg" />
+                </span>
+                <h5>This is your last text...</h5>
+              </div>
             </div>
             <div className="unread">
-              <span>{unreadCount[`${user.conversation_ID}`] ? unreadCount[`${user.conversation_ID}`] : ""}</span>
-              
+              <div>
+                <span>{unreadCount[`${user.conversation_ID}`] ? unreadCount[`${user.conversation_ID}`] : ""}</span>
+              </div>
             </div>
+            <hr />
           </div>
-          <hr />
-        </div>
-      );
-    });
-    SetUsersList(list);
-  }, [unreadCount,setUnreadCount])
+        );
+      });
+      SetUsersList(list);
+
+    }
+  }, [unreadCount, setUnreadCount])
 
 
   function openChat(mobile) {

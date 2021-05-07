@@ -22,6 +22,7 @@ function TextPage() {
   const [pendingRequestDisplay, setpendingRequestDisplay] = React.useState("none");
   const [chatsDisplay, setchatsDisplay] = React.useState("block");
   const [pending_text_in, setPending_text_in] = React.useState(true);
+  const [pendingRequestcolor, setPendingRequestColor] = React.useState("transparent");
 
   const add_friendStyles = {
     display: addFriendDisplay,
@@ -47,11 +48,12 @@ function TextPage() {
         userSocket.on("incoming-pending-text", (data) => {
           //TODO - this signal is not working fix this
           // TODO - re render chat head on this signal
-          console.log("got it asuna weeb");
+          console.log("got it hululululu");
           setPending_text_in(!pending_text_in);
         })
         userSocket.on("recieving_request", (data) => {
           console.log("got a new friend request: ", data);
+          setPendingRequestColor("rgb(121, 121, 233)");
         })
       }
 
@@ -180,8 +182,8 @@ function TextPage() {
   return (
     <div className="split-view">
       <div className="contacts-section">
-        <LeftNav function={openTab} />
-        <ChatHead display={chatsDisplay} loadMessages={loadMessages} commonMsg={commonMsg} />
+        <LeftNav function={openTab} pendingRequestcolor={pendingRequestcolor} />
+        <ChatHead display={chatsDisplay} loadMessages={loadMessages} commonMsg={commonMsg} pending_text_in={pending_text_in} />
 
         <div className="friends-section" style={add_friendStyles}>
           <FriendsDiv friendsText={friendsText} setfriendsText={setfriendsText} searchContact={searchContact} />

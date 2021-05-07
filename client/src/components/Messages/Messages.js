@@ -14,8 +14,10 @@ function Messages(props) {
                     </div>
                 );
             })}
-            <div style={{display: (props.pendingMsg.length > 0 && props.pendingMsg[0].sender != "me") ? "block" : 'none'}}>
-                <span>Unread messages!</span>
+            <div className="unread-messages" style={{ display: (props.pendingMsg.length > 0 && props.pendingMsg[0].sender != "me") ? "block" : 'none' }}>
+                <div>
+                    <span>UNREAD MESSAGES</span>
+                </div>
             </div>
             {props.pendingMsg.map((value, key) => {
                 return (

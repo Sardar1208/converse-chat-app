@@ -175,7 +175,7 @@ app.post("/login_user", async (req, res) => {
 });
 
 app.post("/user_details", async (req, res) => {
-  const query = `INSERT INTO users VALUES ('${req.body.email}','${req.body.username}','${req.body.mobile}', '${req.body.socket_ID}','offline')`;
+  const query = `INSERT INTO users VALUES ('${req.body.email}','${req.body.username}','${req.body.mobile}', '${req.body.socket_ID}','offline','none')`;
   await doQuery(query, res);
   res.json({ result: "success" });
 });

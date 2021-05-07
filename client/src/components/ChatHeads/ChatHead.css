@@ -3,7 +3,7 @@
     /* margin: auto; */
     background-color: white;
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: 20% 70% 10%;
 }
 .chat-head:hover h1{
     color: rgb(121, 121, 233);
@@ -14,7 +14,18 @@
     /* justify-content:space-around; */
 }
 .unread{
-    justify-self: center;
+    display: flex;
+    /* align-items: center; */
+}
+.unread div span{
+    text-align: center;
+    /* border-radius: 50%; */
+    /* background-color: blue; */
+    color: rgb(121, 121, 233);
+    font-weight: bold;
+    font-size: 1.5rem;
+    width: 1rem;
+    height: 1rem;
 }
 .card-text h1{
     font-size: 2rem;
