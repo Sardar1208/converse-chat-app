@@ -89,7 +89,7 @@ io.on("connection", (socket) => {
         console.log("found");
         const query = `select current_chat from users where mobile_no="${data.reciever_mobile}"`;
         await doQuery(query, null, (result) => {
-          console.log("the current_char result is: ",result[0].current_chat, data.sender_ID)
+          console.log("the current_char result is: ", result[0].current_chat, data.sender_ID)
           if (result[0].current_chat == data.sender_ID) {
             console.log("in here in here in here in here in here");
 
@@ -105,7 +105,7 @@ io.on("connection", (socket) => {
             const query = `insert into pending_queue(conversation_ID, msg, msg_time, sender_ID) values ('${data.conversation_ID}', '${data.text}', '${Date.now()}', '${data.sender_ID}')`;
             doQuery(query, null, (result) => {
               console.log("savedin pending table");
-              socket.broadcast.to(`${data.reciever_ID}`).emit("incoming-pending-text", {info: "sending signal to user"});
+              socket.broadcast.to(`${data.recieverID}`).emit("incoming-pending-text", { info: "sending signal to user" });
             })
           }
         }, "current_chat result: ");
@@ -225,9 +225,9 @@ app.post("/get_data", (req, res) => {
     }, "this is it")
   }
   else if (req.headers.get == "socketID") {
-    const query = `select socket_ID from users WHERE mobile_no="${req.body.reciever_mobile}"`;
+    const query = `select socket_ID, current_chat from users WHERE mobile_no="${req.body.reciever_mobile}"`;
     doQuery(query, res, (result) => {
-      res.json({ result: `${result[0].socket_ID}` });
+      res.json({ result: "success", socket_ID: `${result[0].socket_ID}`, current_chat: `${result[0].current_chat}` });
     })
   }
   else if (req.headers.get == "user_contact") {
@@ -240,6 +240,12 @@ app.post("/get_data", (req, res) => {
     const query = `select sender_mobile from pendingrequests where reciever_mobile="${req.body.mobile}" and req_status="pending"`;
     doQuery(query, res, (result) => {
       res.json({ result: result });
+    })
+  }
+  else if (req.headers.get == "username") {
+    const query = `select username from users where mobile_no="${req.body.mobile}"`;
+    doQuery(query, res, (result) => {
+      res.json({ result: "success", username: result });
     })
   }
   // gets the past messages + pending messages(if any)

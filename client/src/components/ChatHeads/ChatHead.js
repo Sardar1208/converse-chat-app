@@ -3,48 +3,55 @@ import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-
 import "./ChatHead.css";
 import { AppContext } from "../../AppContext";
 
+export async function getUnreadCount(conversationIds, setUnreadCount) {
+  console.log("running getunreadcount");
+  const res2 = await fetch("http://localhost:8080/get_data", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      'get': "pending_messages",
+    },
+    body: JSON.stringify({
+      conversation_IDs: conversationIds,
+      sender_ID: sessionStorage.getItem("loggedInUser"),
+    }),
+  });
+
+  const result2 = await res2.json();
+
+  let tempObj = {};
+  for (let i of result2.result) {
+    if (i && i.length > 0) {
+      console.log("this is i here: ", i[0].unread_count);
+      console.log("hihi");
+      // let temp = [...unreadCount, { unread_count: i[0].unread_count, conversation_ID: i[0].conversation_ID }];
+      const temp = tempObj;
+      temp[i[0].conversation_ID] = i[0].unread_count;
+      tempObj = temp;
+      // setUnreadCount(temp);
+    }
+  }
+  console.log("the new state: ", tempObj);
+  setUnreadCount(tempObj);
+}
+
 function ChatHead(props) {
   const history = useHistory();
   const [usersList, SetUsersList] = useState();
-  const [unreadCount, setUnreadCount] = useState({});
-  const [conversationIds, setConversationIds] = useState([]);
-  const { contacts, setContacts, setCurrentContact, userSocket, currentContact } = useContext(AppContext);
+  // const [unreadCount, setUnreadCount] = useState({});
+  // const [conversationIds, setConversationIds] = useState([]);
+  const { contacts, setContacts, setCurrentContact, userSocket, currentContact, unreadCount, setUnreadCount, conversationIds, setConversationIds } = useContext(AppContext);
 
-  async function getUnreadCount() {
-    console.log("running getunreadcount");
-    const res2 = await fetch("http://localhost:8080/get_data", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'get': "pending_messages",
-      },
-      body: JSON.stringify({
-        conversation_IDs: conversationIds,
-        sender_ID: sessionStorage.getItem("loggedInUser"),
-      }),
-    });
 
-    const result2 = await res2.json();
-
-    let tempObj = {};
-    for (let i of result2.result) {
-      if (i && i.length > 0) {
-        console.log("this is i here: ", i[0].unread_count);
-        console.log("hihi");
-        // let temp = [...unreadCount, { unread_count: i[0].unread_count, conversation_ID: i[0].conversation_ID }];
-        const temp = tempObj;
-        temp[i[0].conversation_ID] = i[0].unread_count;
-        tempObj = temp;
-        // setUnreadCount(temp);
-      }
-    }
-    console.log("the new state: ", tempObj);
-    setUnreadCount(tempObj);
-  }
 
   useEffect(async () => {
     console.log("getting contacts");
-
+    // userSocket.on("incoming-pending-text", (data) => {
+    //   //TODO - this signal is not working fix this
+    //   // TODO - re render chat head on this signal
+    //   console.log("got it hululululu");
+    //   // setPending_text_in(!pending_text_in);
+    // })
 
 
     //get all the contacts
@@ -74,8 +81,8 @@ function ChatHead(props) {
 
   useEffect(() => {
     console.log("getting unread count");
-    getUnreadCount();
-  }, [conversationIds, props.commonMsg, props.pending_text_in])
+    getUnreadCount(conversationIds, setUnreadCount);
+  }, [conversationIds, props.commonMsg])
 
   useEffect(() => {
     console.log("making final list", contacts);

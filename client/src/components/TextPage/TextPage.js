@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./TextPage.css";
-import ChatHead from "../ChatHeads/ChatHead";
+import ChatHead, { getUnreadCount } from "../ChatHeads/ChatHead";
 import LeftNav from "../LeftNav/LeftNav";
 import RightNav from "../RightNav/RightNav";
 import FriendsDiv from "../FriendsDiv/FriendsDiv";
@@ -12,7 +12,7 @@ import ChatInput from "../ChatInput/ChatInput";
 
 function TextPage() {
   const history = useHistory();
-  const { userSocket } = React.useContext(AppContext);
+  const { userSocket, setUnreadCount, conversationIds, setLoggedInUsername } = React.useContext(AppContext);
   const [friendsText, setfriendsText] = React.useState("");
   const [commonMsg, setcommonMsg] = React.useState([]);
   const [pendingMsg, setpendingMsg] = React.useState([]);
@@ -33,7 +33,7 @@ function TextPage() {
   }
 
   // whenever there is a new msg, updates the msg state 
-  useEffect(() => {
+  useEffect(async () => {
 
     let unmounted = false;
     if (!unmounted) {
@@ -41,6 +41,20 @@ function TextPage() {
         console.log("in here brouh")
         history.push("/login");
       } else {
+        const res = await fetch("http://localhost:8080/get_data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "get": "username"
+          },
+          body: JSON.stringify({
+            mobile: sessionStorage.getItem("loggedInUser"),
+          }),
+        });
+        const result = await res.json();
+        if (result.result === "success") {
+          setLoggedInUsername(result.username[0].username);
+        }
         userSocket.on("incoming-text", (data) => {
           let temp = [...commonMsg, { sender: data.sender_ID, data: data.text }];
           setcommonMsg(temp);
@@ -49,7 +63,8 @@ function TextPage() {
           //TODO - this signal is not working fix this
           // TODO - re render chat head on this signal
           console.log("got it hululululu");
-          setPending_text_in(!pending_text_in);
+          getUnreadCount(conversationIds, setUnreadCount)
+          // setPending_text_in(!pending_text_in);
         })
         userSocket.on("recieving_request", (data) => {
           console.log("got a new friend request: ", data);
@@ -63,21 +78,6 @@ function TextPage() {
     };
   }, [commonMsg]);
 
-  // async function refresh_chatHead() {
-  //   const res = await fetch("http://localhost:8080/get_data", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       "get": "pending_messages",
-  //     },
-  //     body: JSON.stringify({
-  //       sender_mobile: `${sender}`,
-  //       reciever_mobile: sessionStorage.getItem("loggedInUser"),
-  //       response: status,
-  //     }),
-  //   });
-  //   const result = await res.json();
-  // }
 
   // accept or decline requests
   async function respond_request(status, sender) {
@@ -149,8 +149,12 @@ function TextPage() {
         return { sender: `${sender}`, data: `${text.msg}` }
       });
       console.log("the final texts are: ", texts);
-      setpendingMsg(pending_texts);
-      setcommonMsg(texts);
+      // setpendingMsg(pending_texts);
+      setcommonMsg([...texts, ...pending_texts]);
+      // let temp = [...props.commonMsg, ...props.pendingMsg]
+      // console.log("temp: ", temp);
+      // props.setcommonMsg(temp);
+      // props.setpendingMsg([]);
     }
   }
 
@@ -183,7 +187,7 @@ function TextPage() {
     <div className="split-view">
       <div className="contacts-section">
         <LeftNav function={openTab} pendingRequestcolor={pendingRequestcolor} />
-        <ChatHead display={chatsDisplay} loadMessages={loadMessages} commonMsg={commonMsg} pending_text_in={pending_text_in} />
+        <ChatHead display={chatsDisplay} loadMessages={loadMessages} commonMsg={commonMsg} setcommonMsg={setcommonMsg} pendingMsg={pendingMsg} setpendingMsg={setpendingMsg} pending_text_in={pending_text_in} />
 
         <div className="friends-section" style={add_friendStyles}>
           <FriendsDiv friendsText={friendsText} setfriendsText={setfriendsText} searchContact={searchContact} />
@@ -197,9 +201,9 @@ function TextPage() {
       <div className="chat-section">
         <RightNav />
 
-        <Messages commonMsg={commonMsg} pendingMsg={pendingMsg} className="messages_section" />
+        <Messages commonMsg={commonMsg} pendingMsg={pendingMsg} className="messages_section" setcommonMsg={setcommonMsg} />
 
-        <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg} />
+        <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg} pendingMsg={pendingMsg} setpendingMsg={setpendingMsg} />
       </div>
     </div>
   );

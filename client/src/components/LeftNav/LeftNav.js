@@ -1,6 +1,9 @@
 import React from 'react';
+import { AppContext } from "../../AppContext";
 
 function LeftNav(props) {
+
+  const { loggedInUsername } = React.useContext(AppContext);
 
     let pendingButtonStyles = {
         border: "3px solid",
@@ -11,7 +14,7 @@ function LeftNav(props) {
     return (
         <div className="left-navbar">
             <div>
-                <span className="my-profile">Sarthak</span>
+                <span className="my-profile">{loggedInUsername}</span>
             </div>
             <div className="options">
                 <button onClick={() => { props.function("add_friend") }}><img src="/svg/add.svg" /></button>
