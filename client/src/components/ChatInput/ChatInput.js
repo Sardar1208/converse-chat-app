@@ -52,7 +52,7 @@ function ChatInput(props) {
                 }}
                 value={textValue}
             />
-            <button className="send-button" onClick={sendText}>
+            <button className="the-send-button self-center justify-self-center" onClick={sendText}>
                 Send <img src="/svg/send.svg" />
             </button>
         </div>

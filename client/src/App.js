@@ -4,6 +4,7 @@ import logo from "./logo.svg";
 import ChatHead from "./components/ChatHeads/ChatHead.js";
 import TextPage from "./components/TextPage/TextPage.js";
 import Login from "./components/Login/Login.js";
+import Landing from "./Pages/Landing.js";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AppContext } from "./AppContext";
@@ -42,21 +43,13 @@ function App() {
     <AppContext.Provider value={AppState}>
       <Router>
         <div className="App">
-          {/* <ChatHead info={{'name':"Sarthak"}} />
-      <hr className="divide"/>
-      <ChatHead info={{'name':"Rohit"}} />
-      <hr className="divide"/>
-      <ChatHead info={{'name':"Priyansh"}} />
-      <hr className="divide"/> */}
-          {/* <TextPage /> */}
-          {/* <Login /> */}
+      
         </div>
 
         <Switch>
-          {/* <Route path="/" component={Test} /> */}
+          <Route path="/" exact component={Landing} />
           <Route path="/login" component={Login} />
           <Route path="/textPage" component={TextPage} />
-          {/* <Route path="/chatHead" component={ChatHead} /> */}
         </Switch>
       </Router>
     </AppContext.Provider>

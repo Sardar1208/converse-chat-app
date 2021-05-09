@@ -144,9 +144,9 @@
 .back-button img {
     width: 1.5rem;
 }
-.send-button{
-    justify-self: center;
-    align-self: center;
+.the-send-button{
+    justify-self: center !important;
+    align-self: center !important;
     background-color: rgb(121, 121, 233);
     border: none;
     border-radius: 5rem;
