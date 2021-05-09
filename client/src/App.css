@@ -12,3 +12,21 @@ html,
   width: 80%;
   margin: auto;
 }
+
+.form-input:focus ~ span {
+  color: rgb(56, 56, 56) !important;
+  /* font-size: 1rem; */
+  transition: font-weight 0.3s ease;
+  font-weight: 700;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
