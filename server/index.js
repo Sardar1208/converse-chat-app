@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const { query } = require("express");
 const { v4: uuid } = require('uuid');
+const bcrypt = require('bcryptjs');
+
 // const { Socket } = require("dgram");
 dotenv.config();
 // const userSocketDB = require("./user-socket.js");
@@ -173,6 +175,21 @@ app.post("/login_user", async (req, res) => {
     }
   });
 });
+
+app.post("/signup", async (req, res) => {
+  const { fullName, username, email, mobile, password, socket_ID } = req.body;
+
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash(password, salt, async function (err, hash) {
+      //TODO - Encrypt password an save to db.
+      const query = `insert into users(email_ID, username, mobile_no, socket_ID, current_status, current_chat, pass, fullName)
+      values (email, username, mobile, socket_ID, offline, none, fullName)`;
+      doQuery(query, res, (result) => {
+        // Added to db
+      })
+    });
+  });
+})
 
 app.post("/user_details", async (req, res) => {
   const query = `INSERT INTO users VALUES ('${req.body.email}','${req.body.username}','${req.body.mobile}', '${req.body.socket_ID}','offline','none')`;
