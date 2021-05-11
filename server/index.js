@@ -177,18 +177,41 @@ app.post("/login_user", async (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
+  console.log("the signup body: ", req.body);
   const { fullName, username, email, mobile, password, socket_ID } = req.body;
 
   bcrypt.genSalt(10, function (err, salt) {
     bcrypt.hash(password, salt, async function (err, hash) {
-      //TODO - Encrypt password an save to db.
       const query = `insert into users(email_ID, username, mobile_no, socket_ID, current_status, current_chat, pass, fullName)
-      values (email, username, mobile, socket_ID, offline, none, fullName)`;
+      values ('${email}', '${username}', '${mobile}', '${socket_ID}', 'offline', 'none', '${hash}', '${fullName}')`;
       doQuery(query, res, (result) => {
-        // Added to db
+        res.json({ result: "success" });
       })
     });
   });
+})
+
+app.post("/signin", async (req, res) => {
+  const { username, password } = req.body;
+
+  const query = `select pass from users where username='${username}'`;
+  doQuery(query, res, async (result) => {
+    await bcrypt.compare(password, result[0].pass).then((result) => {
+      if (result == true) {
+        console.log("logged in");
+
+        // authorize this user.
+        // req.session.userID = requestedUser._id;
+        // res.redirect("/");
+      }
+      else {
+        //If the password is incorrect return to login page with error msg.
+        console.log("incorrect credentials");
+        // req.session.err = "Invalid credentials";
+        // res.redirect("/login");
+      }
+    })
+  })
 })
 
 app.post("/user_details", async (req, res) => {
