@@ -25,7 +25,7 @@ function ChatInput(props) {
                 text: `${textValue}`,
                 reciever_mobile: `${currentContact.mobile}`,
                 conversation_ID: `${currentContact.conversation_ID}`,
-                sender_ID: `${sessionStorage.getItem("loggedInUser")}`,
+                sender_ID: `${sessionStorage.getItem("loggedInMobile")}`,
             });
             const temp = [...props.commonMsg, { sender: "me", data: textValue }];
             props.setcommonMsg(temp);

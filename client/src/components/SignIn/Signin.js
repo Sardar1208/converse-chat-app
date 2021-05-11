@@ -8,7 +8,7 @@ import {
     Link,
 } from "react-router-dom";
 
-export async function AuthorizeUser(token, username, socket_ID, setLoggedInUsername, history) {
+export async function AuthorizeUser(token, uniqueKey, socket_ID, setLoggedInUsername, setLoggedInMobile, history) {
 
     const res = await fetch("http://localhost:8080/login_user", {
         method: "POST",
@@ -17,7 +17,7 @@ export async function AuthorizeUser(token, username, socket_ID, setLoggedInUsern
             "authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
-            username: username,
+            uniqueKey: uniqueKey,
             socketID: socket_ID,
         }),
     });
@@ -27,9 +27,11 @@ export async function AuthorizeUser(token, username, socket_ID, setLoggedInUsern
 
     // if user exists then login
     if (result.result == "success") {
-        console.log("successfull login!!!");
-        sessionStorage.setItem("loggedInUser", `${username}`)
-        setLoggedInUsername(username);
+        console.log("successfull login!!!", result);
+        sessionStorage.setItem("loggedInUser", `${result.username}`)
+        sessionStorage.setItem("loggedInMobile", `${result.mobile}`)
+        setLoggedInUsername(result.username);
+        setLoggedInMobile(result.mobile)
         history.push("/textPage");
     }
     //id new user ask additional info
@@ -42,9 +44,9 @@ export async function AuthorizeUser(token, username, socket_ID, setLoggedInUsern
 
 function SignIn(props) {
 
-    const { userSocket, setLoggedInUsername } = React.useContext(AppContext);
+    const { userSocket, setLoggedInUsername, setLoggedInMobile } = React.useContext(AppContext);
     const history = useHistory();
-    const [username, setUsername] = useState("");
+    const [uniqueKey, setUniqueKey] = useState("");
     const [password, setPassword] = useState("");
 
     async function SignIn() {
@@ -54,7 +56,7 @@ function SignIn(props) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                username: username,
+                uniqueKey: uniqueKey,
                 password: password,
             }),
         });
@@ -63,7 +65,7 @@ function SignIn(props) {
         if (result.result === "success") {
             console.log("got an access token: ", result);
             sessionStorage.setItem("accessToken", result.accessToken);
-            AuthorizeUser(result.accessToken, username, userSocket.id, setLoggedInUsername, history);
+            AuthorizeUser(result.accessToken, uniqueKey, userSocket.id, setLoggedInUsername, setLoggedInMobile, history);
             // setLoggedInUsername(username);
             // sessionStorage.setItem("loggedInUser", username);
             // history.push("/textPage");
@@ -85,8 +87,8 @@ function SignIn(props) {
                     <input
                         type="text"
                         className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
-                        onChange={(e) => { setUsername(e.target.value) }}
-                        value={username}
+                        onChange={(e) => { setUniqueKey(e.target.value) }}
+                        value={uniqueKey}
                     />
                     <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
                         Phone Number / Username

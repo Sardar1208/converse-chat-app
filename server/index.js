@@ -129,18 +129,24 @@ io.on("connection", (socket) => {
 
   socket.on("sending_request", (data) => {
     // console.log("new friend request: ", data);
-    const query = `select * from pendingrequests where sender_mobile='${data.sender_mobile}' and reciever_mobile='${data.reciever_mobile}'`;
-    doQuery(query, null, (result) => {
-      if (result.length == 0) {
-        const query = `insert into pendingrequests values("${data.sender_mobile}", "${data.reciever_mobile}", "pending")`;
-        doQuery(query);
-        const query2 = `select socket_ID from users where mobile_no='${data.reciever_mobile}'`;
-        doQuery(query2, null, (result) => {
-          // console.log("emmiting request to reciever with id: ", result[0]);
-          socket.broadcast.to(`${result[0].socket_ID}`).emit("recieving_request", data);
+    const query1 = `select mobile_no from users where mobile_no="${data.reciever_uniqueKey}" or username="${data.reciever_uniqueKey}"`;
+    doQuery(query1, null, (result1) => {
+      if (result1.length > 0) {
+        const query = `select * from pendingrequests where sender_mobile='${data.sender_mobile}' and reciever_mobile='${result1[0].mobile_no}'`;
+        doQuery(query, null, (result) => {
+          if (result.length == 0) {
+            const query = `insert into pendingrequests values("${data.sender_mobile}", "${result1[0].mobile_no}", "pending")`;
+            doQuery(query);
+            const query2 = `select socket_ID from users where mobile_no='${result1[0].mobile_no}'`;
+            doQuery(query2, null, (result) => {
+              // console.log("emmiting request to reciever with id: ", result[0]);
+              socket.broadcast.to(`${result[0].socket_ID}`).emit("recieving_request", data);
+            })
+          }
         })
       }
     })
+
   });
   socket.on("update_current_chat", (data) => {
     // console.log("called called called", data.contact_mobile, data.user_mobile);
@@ -166,15 +172,15 @@ app.get("/create", (req, res) => {
   });
 });
 
-app.post("/login_user", authorize,  async (req, res) => {
+app.post("/login_user", authorize, async (req, res) => {
   console.log("req.body authorize: ", req.body);
-  const query = `select * from users where username="${req.body.username}"`;
-  await doQuery(query, res, (user) => {
+  const query = `select * from users where username="${req.body.uniqueKey}" or mobile_no="${req.body.uniqueKey}"`;
+  await doQuery(query, res, (result) => {
     // console.log("result from returned place: ", user);
-    if (user.length != 0) {
-      const query = `UPDATE users SET socket_ID="${req.body.socketID}", current_status="online" WHERE username="${req.body.username}"`;
+    if (result.length != 0) {
+      const query = `UPDATE users SET socket_ID="${req.body.socketID}", current_status="online" WHERE username="${req.body.uniqueKey}"  or mobile_no="${req.body.uniqueKey}"`;
       doQuery(query);
-      res.json({ result: "success" });
+      res.json({ result: "success", mobile: result[0].mobile_no, username: result[0].username });
     } else {
       res.json({ result: "new user" });
     }
@@ -216,22 +222,21 @@ function authorize(req, res, next) {
 
 }
 
-// app.post("/authorize", async (req, res) => {
-
-// })
 
 app.post("/signin", async (req, res) => {
-  const { username, password } = req.body;
-
-  const query = `select pass from users where username='${username}'`;
+  const { uniqueKey, password } = req.body;
+  console.log("hulululululu: ", req.body);
+  const query = `select pass,mobile_no,username from users where username='${uniqueKey}' or mobile_no='${uniqueKey}'`;
   doQuery(query, res, async (result) => {
-    await bcrypt.compare(password, result[0].pass).then((result) => {
-      if (result == true) {
+    console.log("lulululululu: ", result)
+    await bcrypt.compare(password, result[0].pass).then((bcrypt_result) => {
+      if (bcrypt_result == true) {
         console.log("logged in");
 
         // authorize this user.
-        const accessToken = jwt.sign({ user: username }, 'access', { expiresIn: '30s' });
-        res.json({ result: "success", accessToken: accessToken });
+        const accessToken = jwt.sign({ user: result[0].username }, 'access', { expiresIn: '1h' });
+        console.log("authenticated");
+        res.json({ result: "success", accessToken: accessToken, mobile: result[0].mobile_no, username: result[0].username });
       }
       else {
         //If the password is incorrect return to login page with error msg.
@@ -239,7 +244,7 @@ app.post("/signin", async (req, res) => {
         res.json({ result: "failure" });
       }
     })
-  })
+  }, "database result: ")
 })
 
 app.post("/user_details", async (req, res) => {

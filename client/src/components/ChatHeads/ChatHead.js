@@ -13,7 +13,7 @@ export async function getUnreadCount(conversationIds, setUnreadCount) {
     },
     body: JSON.stringify({
       conversation_IDs: conversationIds,
-      sender_ID: sessionStorage.getItem("loggedInUser"),
+      sender_ID: sessionStorage.getItem("loggedInMobile"),
     }),
   });
 
@@ -62,7 +62,7 @@ function ChatHead(props) {
         'get': "users",
       },
       body: JSON.stringify({
-        reciever_mobile: sessionStorage.getItem("loggedInUser"),
+        reciever_mobile: sessionStorage.getItem("loggedInMobile"),
       }),
     });
 
@@ -121,7 +121,7 @@ function ChatHead(props) {
 
   function openChat(mobile) {
     console.log("this has to be updated: ", mobile)
-    userSocket.emit("update_current_chat", { user_mobile: sessionStorage.getItem("loggedInUser"), contact_mobile: mobile });
+    userSocket.emit("update_current_chat", { user_mobile: sessionStorage.getItem("loggedInMobile"), contact_mobile: mobile });
   }
 
   return <div style={{ display: props.display }}>{usersList}</div>;

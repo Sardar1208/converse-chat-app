@@ -76,7 +76,7 @@ function TextPage() {
       },
       body: JSON.stringify({
         sender_mobile: `${sender}`,
-        reciever_mobile: sessionStorage.getItem("loggedInUser"),
+        reciever_mobile: sessionStorage.getItem("loggedInMobile"),
         response: status,
       }),
     });
@@ -101,7 +101,7 @@ function TextPage() {
   }
 
   async function loadMessages(conversation_ID) {
-    const user = sessionStorage.getItem("loggedInUser");
+    const user = sessionStorage.getItem("loggedInMobile");
     const res = await fetch("http://localhost:8080/get_data", {
       method: "POST",
       headers: {
@@ -154,7 +154,7 @@ function TextPage() {
         get: "pending_requests",
       },
       body: JSON.stringify({
-        mobile: `${sessionStorage.getItem("loggedInUser")}`,
+        mobile: `${sessionStorage.getItem("loggedInMobile")}`,
       }),
     });
     const result = await res.json();
@@ -167,7 +167,7 @@ function TextPage() {
 
   // sends a friend request to the user with socket.
   async function searchContact() {
-    userSocket.emit("sending_request", { sender_mobile: `${sessionStorage.getItem("loggedInUser")}`, reciever_mobile: `${friendsText}` });
+    userSocket.emit("sending_request", { sender_mobile: `${sessionStorage.getItem("loggedInMobile")}`, sender_username: `${sessionStorage.getItem("loggedInUser")}`, reciever_uniqueKey: `${friendsText}` });
   }
 
   return (

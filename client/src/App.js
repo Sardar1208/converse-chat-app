@@ -23,6 +23,7 @@ function App() {
   const [userSocket, setuserSocket] = React.useState(null);
   const [unreadCount, setUnreadCount] = React.useState({});
   const [loggedInUsername, setLoggedInUsername] = React.useState("");
+  const [loggedInMobile, setLoggedInMobile] = React.useState("");
   const [conversationIds, setConversationIds] = React.useState([]);
   // const []
   const AppState = {
@@ -38,6 +39,8 @@ function App() {
     setConversationIds,
     loggedInUsername,
     setLoggedInUsername,
+    loggedInMobile,
+    setLoggedInMobile,
   };
   return (
     <AppContext.Provider value={AppState}>

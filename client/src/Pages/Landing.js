@@ -42,7 +42,7 @@ const Tag = (props) => {
 
 function Landing() {
 
-    const { userSocket, setuserSocket, setLoggedInUsername } = React.useContext(AppContext);
+    const { userSocket, setuserSocket, setLoggedInUsername, setLoggedInMobile, loggedInUsername } = React.useContext(AppContext);
     const history = useHistory();
     const [loginSection, setLoginSection] = React.useState(false);
 
@@ -57,7 +57,7 @@ function Landing() {
             // setsocketID(socket.id);
             const token = sessionStorage.getItem("accessToken");
             const username = sessionStorage.getItem("loggedInUser");
-            AuthorizeUser(token, username, socket.id, setLoggedInUsername, history);
+            AuthorizeUser(token, username, socket.id, setLoggedInUsername, setLoggedInMobile, history);
             //TODO - checks if user is in session and logs in directly 
         });
 
