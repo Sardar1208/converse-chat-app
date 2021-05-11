@@ -8,6 +8,8 @@ const dotenv = require("dotenv");
 const { query } = require("express");
 const { v4: uuid } = require('uuid');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { env } = require("process");
 
 // const { Socket } = require("dgram");
 dotenv.config();
@@ -18,6 +20,8 @@ const db = mysql.createConnection({
   password: process.env.DB_Password,
   database: process.env.DB_Name,
 });
+
+console.log("db name", process.env.DB_Name)
 
 db.connect((err) => {
   if (err) throw err;
@@ -162,12 +166,13 @@ app.get("/create", (req, res) => {
   });
 });
 
-app.post("/login_user", async (req, res) => {
-  const query = `select * from users where mobile_no="${req.body.mobile}"`;
+app.post("/login_user", authorize,  async (req, res) => {
+  console.log("req.body authorize: ", req.body);
+  const query = `select * from users where username="${req.body.username}"`;
   await doQuery(query, res, (user) => {
     // console.log("result from returned place: ", user);
     if (user.length != 0) {
-      const query = `UPDATE users SET socket_ID="${req.body.socketID}", current_status="online" WHERE mobile_no="${req.body.mobile}"`;
+      const query = `UPDATE users SET socket_ID="${req.body.socketID}", current_status="online" WHERE username="${req.body.username}"`;
       doQuery(query);
       res.json({ result: "success" });
     } else {
@@ -191,6 +196,30 @@ app.post("/signup", async (req, res) => {
   });
 })
 
+function authorize(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) {
+    res.json({ result: "not authorized" });
+  } else {
+    jwt.verify(token, 'access', (err, user) => {
+      if (err) {
+        console.log("token err: ", err);
+        res.json({ result: "not authorized" });
+      } else {
+        console.log("token user: ", user);
+        req.user = user;
+        next();
+      }
+    })
+  }
+
+}
+
+// app.post("/authorize", async (req, res) => {
+
+// })
+
 app.post("/signin", async (req, res) => {
   const { username, password } = req.body;
 
@@ -201,14 +230,13 @@ app.post("/signin", async (req, res) => {
         console.log("logged in");
 
         // authorize this user.
-        // req.session.userID = requestedUser._id;
-        // res.redirect("/");
+        const accessToken = jwt.sign({ user: username }, 'access', { expiresIn: '30s' });
+        res.json({ result: "success", accessToken: accessToken });
       }
       else {
         //If the password is incorrect return to login page with error msg.
         console.log("incorrect credentials");
-        // req.session.err = "Invalid credentials";
-        // res.redirect("/login");
+        res.json({ result: "failure" });
       }
     })
   })

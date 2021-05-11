@@ -39,22 +39,9 @@ function TextPage() {
     if (!unmounted) {
       if (!userSocket) {
         console.log("in here brouh")
-        history.push("/login");
+        history.push("/");
       } else {
-        const res = await fetch("http://localhost:8080/get_data", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "get": "username"
-          },
-          body: JSON.stringify({
-            mobile: sessionStorage.getItem("loggedInUser"),
-          }),
-        });
-        const result = await res.json();
-        if (result.result === "success") {
-          setLoggedInUsername(result.username[0].username);
-        }
+
         userSocket.on("incoming-text", (data) => {
           let temp = [...commonMsg, { sender: data.sender_ID, data: data.text }];
           setcommonMsg(temp);

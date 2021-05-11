@@ -1,14 +1,19 @@
 import React, { useRef, useEffect, useState } from "react";
 import { AppContext } from "../AppContext";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    useHistory,
+    Link,
+} from "react-router-dom";
 import io from "socket.io-client";
 import Signup from "../components/Signup/Signup";
-import Signin from "../components/SignIn/Signin";
+import Signin, { AuthorizeUser } from "../components/SignIn/Signin";
 
 const Tag = (props) => {
     const ref = useRef(null);
-    // useEffect(() => {
-    //     console.log("width", ref.current ? ref.current.offsetWidth : 0);
-    // }, [ref.current]);
+
     return (
         <>
             <span className="text-gray-400 font-mono" ref={ref}>
@@ -37,7 +42,8 @@ const Tag = (props) => {
 
 function Landing() {
 
-    const { userSocket, setuserSocket } = React.useContext(AppContext);
+    const { userSocket, setuserSocket, setLoggedInUsername } = React.useContext(AppContext);
+    const history = useHistory();
     const [loginSection, setLoginSection] = React.useState(false);
 
     useEffect(async () => {
@@ -49,7 +55,9 @@ function Landing() {
             //Sets the state after connection
             setuserSocket(socket);
             // setsocketID(socket.id);
-
+            const token = sessionStorage.getItem("accessToken");
+            const username = sessionStorage.getItem("loggedInUser");
+            AuthorizeUser(token, username, socket.id, setLoggedInUsername, history);
             //TODO - checks if user is in session and logs in directly 
         });
 

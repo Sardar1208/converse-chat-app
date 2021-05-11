@@ -1,10 +1,49 @@
 import React, { useState } from "react";
 import { AppContext } from "../../AppContext";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    useHistory,
+    Link,
+} from "react-router-dom";
 
+export async function AuthorizeUser(token, username, socket_ID, setLoggedInUsername, history) {
+
+    const res = await fetch("http://localhost:8080/login_user", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            username: username,
+            socketID: socket_ID,
+        }),
+    });
+
+    const result = await res.json();
+    console.log(await result);
+
+    // if user exists then login
+    if (result.result == "success") {
+        console.log("successfull login!!!");
+        sessionStorage.setItem("loggedInUser", `${username}`)
+        setLoggedInUsername(username);
+        history.push("/textPage");
+    }
+    //id new user ask additional info
+    else if (result.result == "new user") {
+        console.log("login failed");
+        // setaddDetailsDisplay("block");
+        // setLoginDivDisplay("none");
+    }
+}
 
 function SignIn(props) {
 
-    const { userSocket } = React.useContext(AppContext);
+    const { userSocket, setLoggedInUsername } = React.useContext(AppContext);
+    const history = useHistory();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -21,7 +60,19 @@ function SignIn(props) {
         });
 
         const result = await res.json();
+        if (result.result === "success") {
+            console.log("got an access token: ", result);
+            sessionStorage.setItem("accessToken", result.accessToken);
+            AuthorizeUser(result.accessToken, username, userSocket.id, setLoggedInUsername, history);
+            // setLoggedInUsername(username);
+            // sessionStorage.setItem("loggedInUser", username);
+            // history.push("/textPage");
+            // AuthorizeUser(result.accessToken);
+        }
     }
+
+
+
 
     return (
         <div className="w-100 px-4">
