@@ -1,4 +1,6 @@
 import React, { useRef, useEffect } from "react";
+import Login from "../components/Login/Login";
+// import { motion } from "framer-motion";
 
 const Tag = (props) => {
   const ref = useRef(null);
@@ -32,15 +34,24 @@ const Tag = (props) => {
 };
 
 function Landing() {
+  const [loginSection, setLoginSection] = React.useState(false);
+  console.log(
+    "%c\tloginSection:\t",
+    "background: #374151; color: #FBBF24; font-weight: 600;",
+    loginSection
+  );
+
   return (
     <div className="grid grid-cols-10 h-screen">
-      <div className="col-span-7 bg-violet-600 text-white">
-        <div className="px-16 py-12 pb-8">
+      <div className="col-span-7 bg-violet-600 text-white flex justify-center items-center">
+        <div className="px-20 py-12 pb-8 ">
           <h1 className="text-6xl font-bold items-end flex tracking-wider">
             Hi there
             <img src="/svg/wave.svg" className="w-14 ml-2" />,
           </h1>
-          <h1 className="text-6xl font-bold items-end tracking-wider">Welcome to Converse</h1>
+          <h1 className="text-6xl font-bold items-end tracking-wider">
+            Welcome to Converse
+          </h1>
           <h4 className="text-4xl font-thin font-mono mt-8 flex items-end">
             {"</> Made with"}
             <img src="/svg/love.svg" className="w-10 ml-2 mx-3" /> {"in React"}
@@ -55,7 +66,7 @@ function Landing() {
               <p className="">
                 <Tag tagName="Version" content=" v.1.0.0 " />
                 <Tag
-                  tagName="GithubLink"
+                  tagName="GithubRepo"
                   content="https://github.com/Sardar1208/chat"
                   isLink={true}
                 />
@@ -83,72 +94,129 @@ function Landing() {
           </div>
         </div>
       </div>
-      <div className="py-12 px-4 col-span-3 bg-white">
-        <span className="font-bold text-4xl pl-2 border-l-4 border-red-400 text-gray-600">
-          {/* Interested ?<br /> */}
-          Get Started
-        </span>
-        <div>
-          <div className="mb-3 pt-1 flex relative mt-4 ">
-            <input
-              type="text"
-              className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
-            />
-            <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
-              Full Name
+      <div className="py-12 px-4 col-span-3 bg-white flex justify-center items-center ">
+        {loginSection ? (
+          <div className="w-100 px-4">
+            <span className="font-bold text-4xl pl-2 border-l-4 border-red-400 text-gray-600">
+              {/* Interested ?<br /> */}
+              Login
             </span>
+            <div>
+              <div className="mb-3 pt-1 flex relative mt-12">
+                <input
+                  type="text"
+                  className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
+                />
+                <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
+                  Phone Numbe / Username
+                </span>
+              </div>
+              <div className="mb-3 pt-1 flex relative mt-4">
+                <input
+                  type="password"
+                  className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
+                />
+                <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
+                  Password
+                </span>
+              </div>
+              <div className="flex justify-center my-8">
+                <button className="py-2 rounded-md px-8 bg-violet-500 text-white font-bold focus:bg-violet-700 hover:bg-violet-600">
+                  Login
+                </button>
+              </div>
+              <div className="flex items-center">
+                <hr />
+                <span className="px-2">OR</span>
+                <hr />
+              </div>
+              <div className="flex justify-center items-center mt-6">
+                <span>New to Converse?</span>
+                <button
+                  className="ml-4 hover:bg-violet-500 px-8 py-2 text-violet-700 hover:text-white border-2 border-violet-500 rounded-lg"
+                  onClick={() => setLoginSection(false)}
+                >
+                  Register
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="mb-3 pt-1 flex relative mt-4">
-            <input
-              type="text"
-              className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
-            />
-            <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
-              Username
-            </span>
-          </div>
-          <div className="mb-3 pt-1 flex relative mt-4">
-            <input
-              type="email"
-              className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
-            />
-            <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
-              Email ID
-            </span>
-          </div>
-          <div className="mb-3 pt-1 flex relative mt-4">
-            <input
-              type="number"
-              className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
-            />
-            <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
-              Phone Number
-            </span>
-          </div>
-          <div className="mb-3 pt-1 flex relative mt-4">
-            <input
-              type="password"
-              className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
-            />
-            <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
-              Password
-            </span>
-          </div>
-          <div className="flex justify-center my-6">
-            <button className="py-2 rounded-md px-8 bg-violet-500 text-white font-bold focus:bg-violet-700 hover:bg-violet-600">
-              Register
-            </button>
-          </div>
-          <div className="flex items-center">
-            <hr />
-            <span className="px-2">OR</span>
-            <hr />
-          </div>
-          <div className="flex justify-center items-center mt-6">
-            <span>Already a user?</span>
-            <button className="ml-4 hover:bg-violet-500 px-8 py-2 text-violet-700 hover:text-white border-2 border-violet-500 rounded-lg">Login</button>
-          </div>
-        </div>
+        ) : (
+        //   <motion.div animate={{ rotate: 360 }} transition={{ duration: 2 }}>
+            <div className="w-100 px-4">
+              <span className="font-bold text-4xl pl-2 border-l-4 border-red-400 text-gray-600">
+                {/* Interested ?<br /> */}
+                Get Started
+              </span>
+              <div>
+                <div className="mb-3 pt-1 flex relative mt-12 ">
+                  <input
+                    type="text"
+                    className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
+                  />
+                  <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
+                    Full Name
+                  </span>
+                </div>
+                <div className="mb-3 pt-1 flex relative mt-4">
+                  <input
+                    type="text"
+                    className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
+                  />
+                  <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
+                    Username
+                  </span>
+                </div>
+                <div className="mb-3 pt-1 flex relative mt-4">
+                  <input
+                    type="email"
+                    className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
+                  />
+                  <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
+                    Email ID
+                  </span>
+                </div>
+                <div className="mb-3 pt-1 flex relative mt-4">
+                  <input
+                    type="number"
+                    className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
+                  />
+                  <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
+                    Phone Number
+                  </span>
+                </div>
+                <div className="mb-3 pt-1 flex relative mt-4">
+                  <input
+                    type="password"
+                    className="form-input px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 relative border rounded border-blueGray-300 bg-transparent rounded text-sm outline-none focus:outline-none focus:ring w-full"
+                  />
+                  <span className="absolute -top-1.5 bg-white px-1 ml-2 text-gray-500 text-sm">
+                    Password
+                  </span>
+                </div>
+                <div className="flex justify-center my-6">
+                  <button className="py-2 rounded-md px-8 bg-violet-500 text-white font-bold focus:bg-violet-700 hover:bg-violet-600">
+                    Register
+                  </button>
+                </div>
+                <div className="flex items-center">
+                  <hr />
+                  <span className="px-2">OR</span>
+                  <hr />
+                </div>
+                <div className="flex justify-center items-center mt-6">
+                  <span>Already a user?</span>
+                  <button
+                    className="ml-4 hover:bg-violet-500 px-8 py-2 text-violet-700 hover:text-white border-2 border-violet-500 rounded-lg"
+                    onClick={() => setLoginSection(true)}
+                  >
+                    Login
+                  </button>
+                </div>
+              </div>
+            </div>
+        //   </motion.div>
+        )}
       </div>
     </div>
   );
