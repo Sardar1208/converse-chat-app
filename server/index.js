@@ -98,9 +98,9 @@ io.on("connection", (socket) => {
           console.log("the current_char result is: ", result[0].current_chat, data.sender_ID)
           if (result[0].current_chat == data.sender_ID) {
             console.log("in here in here in here in here in here");
-
-            socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", { text: `${data.text}`, sender_ID: `${data.sender_ID}` });
-            const query = `insert into messages(msg, msg_time, conversation_ID, sender_ID) values ('${data.text}', '${Date.now()}', '${data.conversation_ID}', '${data.sender_ID}')`;
+            const time = Date.now();
+            socket.broadcast.to(`${data.recieverID}`).emit("incoming-text", { text: `${data.text}`, sender_ID: `${data.sender_ID}`, time: `${time}` });
+            const query = `insert into messages(msg, msg_time, conversation_ID, sender_ID) values ('${data.text}', '${time}', '${data.conversation_ID}', '${data.sender_ID}')`;
             doQuery(query, null, (result) => {
               console.log("saved");
             });

@@ -2,12 +2,10 @@
     /* width: 80%; */
     /* margin: auto; */
     background-color: white;
-    display: grid;
-    grid-template-columns: 20% 70% 10%;
+    /* display: grid;
+    grid-template-columns: 20% 70% 10%; */
 }
-.chat-head:hover h1{
-    color: rgb(121, 121, 233);
-}
+
 .card-text{
     margin-left: 1rem;
     display: flex;
@@ -21,7 +19,6 @@
     text-align: center;
     /* border-radius: 50%; */
     /* background-color: blue; */
-    color: rgb(121, 121, 233);
     font-weight: bold;
     font-size: 1.5rem;
     width: 1rem;
@@ -30,11 +27,9 @@
 .card-text h1{
     font-size: 2rem;
     margin-bottom: 0rem;
-    color: black;
 }
 .card-text h5{
     display: inline;
-    color: black;
     font-size: 1rem;
 }
 .card-img img{
@@ -49,7 +44,6 @@ hr {
     display:block;
     width: 96%;               
     /* background-color:#FFFF00; */
-    color: black;
     height: 1px;
     grid-column: span 2;
   }

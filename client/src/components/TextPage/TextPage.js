@@ -43,7 +43,7 @@ function TextPage() {
       } else {
 
         userSocket.on("incoming-text", (data) => {
-          let temp = [...commonMsg, { sender: data.sender_ID, data: data.text }];
+          let temp = [...commonMsg, { sender: data.sender_ID, data: data.text, time: data.time }];
           setcommonMsg(temp);
         });
         userSocket.on("incoming-pending-text", (data) => {
@@ -123,7 +123,7 @@ function TextPage() {
         } else {
           sender = text.sender_ID;
         }
-        return { sender: `${sender}`, data: `${text.msg}` }
+        return { sender: `${sender}`, data: `${text.msg}`, time: `${text.msg_time}` }
       });
 
       const pending_texts = result.pending_messages.map((text) => {
@@ -133,7 +133,7 @@ function TextPage() {
         } else {
           sender = text.sender_ID;
         }
-        return { sender: `${sender}`, data: `${text.msg}` }
+        return { sender: `${sender}`, data: `${text.msg}`, time: `${text.msg_time}` }
       });
       console.log("the final texts are: ", texts);
       // setpendingMsg(pending_texts);
@@ -172,7 +172,7 @@ function TextPage() {
 
   return (
     <div className="split-view">
-      <div className="contacts-section">
+      <div className="contacts-section bg-blueGray-50">
         <LeftNav function={openTab} pendingRequestcolor={pendingRequestcolor} />
         <ChatHead display={chatsDisplay} loadMessages={loadMessages} commonMsg={commonMsg} setcommonMsg={setcommonMsg} pendingMsg={pendingMsg} setpendingMsg={setpendingMsg} pending_text_in={pending_text_in} />
 
@@ -188,7 +188,7 @@ function TextPage() {
       <div className="chat-section">
         <RightNav />
 
-        <Messages commonMsg={commonMsg} pendingMsg={pendingMsg} className="messages_section" setcommonMsg={setcommonMsg} />
+        <Messages commonMsg={commonMsg} pendingMsg={pendingMsg} className="messages_section " setcommonMsg={setcommonMsg} />
 
         <ChatInput commonMsg={commonMsg} setcommonMsg={setcommonMsg} pendingMsg={pendingMsg} setpendingMsg={setpendingMsg} />
       </div>

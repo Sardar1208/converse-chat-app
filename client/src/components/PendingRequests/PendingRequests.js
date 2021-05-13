@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function PendingRequests(props) {
+
+    const [noReqDisplay, setNoReqDisplay] = useState("none");
 
     useEffect(() => {
         //TODO - run this when the app loads
@@ -16,13 +18,22 @@ function PendingRequests(props) {
                     </div>
                 )
             })
+        if(listOfRequests.length == 0){
+            setNoReqDisplay("flex");
+        }
         props.setRequestList(listOfRequests);
 
     }, [props.requests])
 
+    console.log(props.requests)
     return (
-        <div>
-            {props.requestList}
+        <div className="h-full">
+            <div className="no-req h-full m-auto flex" style={{display: noReqDisplay}}>
+                <h4 className="text-center m-auto self-center text-gray-600">There are no pending friend requests.</h4>
+            </div>
+            <div>
+                {props.requestList}
+            </div>
         </div>
     )
 }

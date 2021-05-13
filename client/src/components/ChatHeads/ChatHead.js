@@ -91,25 +91,24 @@ function ChatHead(props) {
       let list = contacts.map((user) => {
         console.log("dog cat: ", unreadCount['d23febf4-9cb1-49cc-a35d-6f10a61172b3']);
         return (
-          <div className="chat-head" onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID); openChat(user.mobile); }}>
-            <div className="card-img">
+          <div className="chat-head mb-2 hover:bg-violet-500 group grid grid-cols-10 bg-white-400 shadow-md p-4 mx-3 rounded-xl " 
+            onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID); openChat(user.mobile); }}
+            >
+            <div className="card-img col-span-2">
               <img src="/images/pic_1.jpg" />
             </div>
-            <div className="card-text">
+            <div className="card-text col-span-7 text-white">
               <div className="text-body">
-                <h1>{user.name}</h1>
-                <span>
-                  <img src="/svg/sent.svg" />
-                </span>
-                <h5>This is your last text...</h5>
+                <h1 className="text-black group-hover:text-white">{user.name}</h1>
+                <h5 className="group-hover:text-violet-200 text-gray-500">This is your last text...</h5>
               </div>
             </div>
-            <div className="unread">
+            <div className="unread col-span-1">
               <div>
                 <span>{unreadCount[`${user.conversation_ID}`] ? unreadCount[`${user.conversation_ID}`] : ""}</span>
               </div>
             </div>
-            <hr />
+            {/* <hr /> */}
           </div>
         );
       });
@@ -124,7 +123,7 @@ function ChatHead(props) {
     userSocket.emit("update_current_chat", { user_mobile: sessionStorage.getItem("loggedInMobile"), contact_mobile: mobile });
   }
 
-  return <div style={{ display: props.display }}>{usersList}</div>;
+  return <div className="my-2" style={{ display: props.display }}>{usersList}</div>;
 }
 
 export default ChatHead;

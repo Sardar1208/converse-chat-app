@@ -10,7 +10,6 @@
     grid-template-rows: 10% auto;
     max-height: 100vh;
     overflow:scroll;
-    border-right: 1px solid grey;
 }
 .chat-section{
     display: grid;
@@ -67,6 +66,17 @@
     /* border-right: 2px solid black ; */
     
 }
+/* .no-req{
+    height: 100%;
+    margin: auto !important;
+    color: red;
+    display: flex;
+}
+.no-req h1{
+    text-align: center;
+    margin: auto;
+    align-self: center;
+} */
 .friends-innerdiv{
     margin: auto;
     /* background-color: black; */
@@ -159,10 +169,10 @@
     padding-bottom: 0.5rem;
 }
 .messeges{
-    background-color: #dee3de;
+    background-color: transparent;
     margin: 0;
 }
-.text-box{
+/* .text-box{
     width: 45%;
     background-color: lightgreen;
     margin: 1rem;
@@ -182,7 +192,7 @@
     padding-left: 0.5rem;
     border-radius: 1rem;
     border-bottom-right-radius: 0%;
-}
+} */
 hr{
     color: white;
     background-color: white;
@@ -218,5 +228,27 @@ hr{
     background-color: rgba(209, 79, 70, 0.836);
 }
 .messages_section{
+    /* background-color: black; */
     overflow:visible;
+}
+.baap-div{
+    width: 45rem;
+    flex-wrap: wrap;
+}
+.chat-bubble{
+    /* width: ; */
+    /* flex-wrap: wrap; */
+    /* max-width: min(min-content, 45rem); */
+    /* max-width: min(min-content, 100px); */
+    /* max-width: 45rem; */
+}
+.triangle{
+    width: 0;
+	height: 0;
+	border-left: 15px solid transparent !important;
+	border-right: 15px solid transparent !important;
+	border-bottom: 15px solid;
+    border-top: transparent !important;
+    transform: rotate(180deg);
+    /* transform: rotateY(180deg); */
 }
