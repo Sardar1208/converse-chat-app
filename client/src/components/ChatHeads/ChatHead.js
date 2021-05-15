@@ -35,6 +35,31 @@ export async function getUnreadCount(conversationIds, setUnreadCount) {
   setUnreadCount(tempObj);
 }
 
+export async function getContacts(setContacts, setConversationIds) {
+  const res = await fetch("http://localhost:8080/get_data", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      'get': "users",
+    },
+    body: JSON.stringify({
+      reciever_mobile: sessionStorage.getItem("loggedInMobile"),
+    }),
+  });
+
+  const result = await res.json();
+  setContacts(result.result);
+  if (result.result != "no users") {
+    console.log("the new result is::", result.result);
+
+    const convoIds = result.result.map((i) => {
+      return i.conversation_ID;
+    })
+
+    setConversationIds(convoIds);
+  }
+}
+
 function ChatHead(props) {
   const history = useHistory();
   const [usersList, SetUsersList] = useState();
@@ -46,37 +71,9 @@ function ChatHead(props) {
 
   useEffect(async () => {
     console.log("getting contacts");
-    // userSocket.on("incoming-pending-text", (data) => {
-    //   //TODO - this signal is not working fix this
-    //   // TODO - re render chat head on this signal
-    //   console.log("got it hululululu");
-    //   // setPending_text_in(!pending_text_in);
-    // })
-
 
     //get all the contacts
-    const res = await fetch("http://localhost:8080/get_data", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'get': "users",
-      },
-      body: JSON.stringify({
-        reciever_mobile: sessionStorage.getItem("loggedInMobile"),
-      }),
-    });
-
-    const result = await res.json();
-    setContacts(result.result);
-    if (result.result != "no users") {
-      console.log("the new result is::", result.result);
-
-      const convoIds = result.result.map((i) => {
-        return i.conversation_ID;
-      })
-
-      setConversationIds(convoIds);
-    }
+    getContacts(setContacts, setConversationIds);
   }, []);
 
   useEffect(() => {
@@ -87,13 +84,12 @@ function ChatHead(props) {
   useEffect(() => {
     console.log("making final list", contacts);
     if (contacts.length > 0 && contacts != "no users") {
-      console.log("why in there")
       let list = contacts.map((user) => {
         console.log("dog cat: ", unreadCount['d23febf4-9cb1-49cc-a35d-6f10a61172b3']);
         return (
-          <div className="chat-head mb-2 hover:bg-violet-500 group grid grid-cols-10 bg-white-400 shadow-md p-4 mx-3 rounded-xl " 
+          <div className="chat-head mb-2 hover:bg-violet-500 group grid grid-cols-10 bg-white-400 shadow-md p-4 mx-3 rounded-xl "
             onClick={() => { setCurrentContact(user); props.loadMessages(user.conversation_ID); openChat(user.mobile); }}
-            >
+          >
             <div className="card-img col-span-2">
               <img src="/images/pic_1.jpg" />
             </div>

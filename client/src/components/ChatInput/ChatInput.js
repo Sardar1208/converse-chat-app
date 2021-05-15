@@ -29,13 +29,8 @@ function ChatInput(props) {
             });
             const temp = [...props.commonMsg, { sender: "me", data: textValue }];
             props.setcommonMsg(temp);
-            // if (result.current_chat == sessionStorage.getItem("loggedInUser")) {
-
-            // } else {
-            //     const temp = [...props.pendingMsg, { sender: "me", data: textValue }];
-            //     props.setpendingMsg(temp);
-            // }
             console.log("and the lucky number is: ", result.current_chat);
+            
             // render chat page and remove this page
             setTextValue("");
         }

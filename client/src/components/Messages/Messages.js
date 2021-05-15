@@ -35,14 +35,14 @@ function Messages(props) {
             </div> */}
             {finalMsg.map((value, key) => {
                 return (
-                    <div className="baap-div">
-                        <div key={key + "-" + value.data} className={(value.sender == "me" ? "bg-violet-500 text-white ml-auto mr-8 rounded-l-2xl rounded-br-2xl relative" : "bg-blueGray-200 max-w-2xl mr-auto ml-8 rounded-r-2xl rounded-bl-2xl relative") + " p-3 px-4 my-3 break-words chat-bubble"}>
-                            {value.sender == "me" ? <div className="border-violet-500 triangle absolute top-0 -right-4"></div>
-                                : <div className="border-blueGray-200 triangle absolute top-0 -left-4"></div>}
-                            <span>{value.data}</span>
-                            <span>{value.time}</span>
-                        </div>
+
+                    <div key={key + "-" + value.data} className={(value.sender == "me" ? "bg-violet-500 text-white ml-auto mr-8 rounded-l-2xl rounded-br-2xl relative" : "bg-blueGray-200 max-w-2xl mr-auto ml-8 rounded-r-2xl rounded-bl-2xl relative") + " p-3 px-4 my-3 break-words chat-bubble"}>
+                        {value.sender == "me" ? <div className="border-violet-500 triangle absolute top-0 -right-4"></div>
+                            : <div className="border-blueGray-200 triangle absolute top-0 -left-4"></div>}
+                        <span>{value.data}</span>
+                        <span>{value.time}</span>
                     </div>
+
                 );
             })}
         </div>

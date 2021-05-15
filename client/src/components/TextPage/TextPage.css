@@ -231,11 +231,12 @@ hr{
     /* background-color: black; */
     overflow:visible;
 }
-.baap-div{
-    width: 45rem;
-    flex-wrap: wrap;
-}
 .chat-bubble{
+    /* flex-wrap: wrap; */
+    /* width: auto; */
+    /* display: block; */
+    width: max-content;
+    max-width: 45rem;
     /* width: ; */
     /* flex-wrap: wrap; */
     /* max-width: min(min-content, 45rem); */
@@ -251,4 +252,8 @@ hr{
     border-top: transparent !important;
     transform: rotate(180deg);
     /* transform: rotateY(180deg); */
+}
+.pending-tab:hover, .active-tab:hover{
+    color: black;
+    border-color: black;
 }
