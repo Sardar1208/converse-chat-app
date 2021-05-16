@@ -21,7 +21,13 @@
 .contacts-section::-webkit-scrollbar {
     display: none;
 }
-
+.messages{
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.messages::-webkit-scrollbar {
+    display: none;
+}
 .my-profile{
     font-size: 1.5rem;
     font-weight: bold;
@@ -29,26 +35,8 @@
 }
   
   /* Hide scrollbar for IE, Edge and Firefox */
-.input-section{
-    background-color: white;
-    display: flex;
-    justify-content: start;
-}
-.input-section input{
-    justify-self: center;
-    align-self: center;
-    outline: none;
-    background-color: #dee3de;
-    width: 80%;
-    font-size: 1.5rem;
-    border: none;
-    border-radius: 5rem;
-    margin: 1rem;
-    padding-left: 1rem;
-    /* padding-top: 1rem;
-    padding-bottom: 1rem; */
-    border-color: black;
-}
+
+
 .unread-messages{
     text-align: center;
     margin-top: 0.5rem;
@@ -168,31 +156,6 @@
 .send-button img{
     padding-bottom: 0.5rem;
 }
-.messeges{
-    background-color: transparent;
-    margin: 0;
-}
-/* .text-box{
-    width: 45%;
-    background-color: lightgreen;
-    margin: 1rem;
-    margin-top: 0;
-    font-size: 1.5rem;
-    padding-left: 0.5rem;
-    border-radius: 1rem;
-    border-bottom-left-radius: 0%;
-}
-.my-text-box{
-    width: 45%;
-    background-color: lightslategray;
-    margin: 1rem;
-    margin-top: 0;
-    margin-left: auto;
-    font-size: 1.5rem;
-    padding-left: 0.5rem;
-    border-radius: 1rem;
-    border-bottom-right-radius: 0%;
-} */
 hr{
     color: white;
     background-color: white;
@@ -256,4 +219,7 @@ hr{
 .pending-tab:hover, .active-tab:hover{
     color: black;
     border-color: black;
+}
+.www{
+    min-width: 5rem;
 }

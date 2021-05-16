@@ -25,6 +25,8 @@ function App() {
   const [loggedInUsername, setLoggedInUsername] = React.useState("");
   const [loggedInMobile, setLoggedInMobile] = React.useState("");
   const [conversationIds, setConversationIds] = React.useState([]);
+  const lastElmRef = React.useRef(null);
+
   // const []
   const AppState = {
     contacts,
@@ -41,6 +43,7 @@ function App() {
     setLoggedInUsername,
     loggedInMobile,
     setLoggedInMobile,
+    lastElmRef
   };
   return (
     <AppContext.Provider value={AppState}>

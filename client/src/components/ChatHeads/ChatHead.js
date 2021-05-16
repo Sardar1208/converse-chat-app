@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { BrowserRouter as Router, Switch, Route, useHistory, Link } from "react-router-dom";
 import "./ChatHead.css";
+import { scroll } from "../Messages/Messages.js";
 import { AppContext } from "../../AppContext";
 
 export async function getUnreadCount(conversationIds, setUnreadCount) {
@@ -65,7 +66,7 @@ function ChatHead(props) {
   const [usersList, SetUsersList] = useState();
   // const [unreadCount, setUnreadCount] = useState({});
   // const [conversationIds, setConversationIds] = useState([]);
-  const { contacts, setContacts, setCurrentContact, userSocket, currentContact, unreadCount, setUnreadCount, conversationIds, setConversationIds } = useContext(AppContext);
+  const { contacts, setContacts, setCurrentContact, userSocket, lastElmRef, unreadCount, setUnreadCount, conversationIds, setConversationIds } = useContext(AppContext);
 
 
 
@@ -115,8 +116,8 @@ function ChatHead(props) {
 
 
   function openChat(mobile) {
-    console.log("this has to be updated: ", mobile)
-    userSocket.emit("update_current_chat", { user_mobile: sessionStorage.getItem("loggedInMobile"), contact_mobile: mobile });
+    scroll(lastElmRef);
+    userSocket.emit("update_current_chat", { user_mobile: sessionStorage.getItem("loggedInMobile"), contact_mobile: mobile }); 
   }
 
   return <div className="my-2" style={{ display: props.display }}>{usersList}</div>;

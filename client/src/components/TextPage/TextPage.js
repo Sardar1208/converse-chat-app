@@ -7,6 +7,7 @@ import FriendsDiv from "../FriendsDiv/FriendsDiv";
 import PendingRequests from "../PendingRequests/PendingRequests";
 import Messages from "../Messages/Messages";
 import OnBoarding from "../OnBoarding/OnBoarding.js";
+import { scroll } from "../Messages/Messages.js";
 import { AppContext } from "../../AppContext";
 import {
   BrowserRouter as Router,
@@ -25,6 +26,7 @@ function TextPage() {
     conversationIds,
     setLoggedInUsername,
     currentContact,
+    lastElmRef,
   } = React.useContext(AppContext);
   const [friendsText, setfriendsText] = React.useState("");
   const [commonMsg, setcommonMsg] = React.useState([]);
@@ -47,6 +49,7 @@ function TextPage() {
   const pendingRequestStyles = {
     display: pendingRequestDisplay,
   };
+
 
   // whenever there is a new msg, updates the msg state
   useEffect(async () => {
@@ -173,6 +176,7 @@ function TextPage() {
       console.log("the final texts are: ", texts);
       // setpendingMsg(pending_texts);
       setcommonMsg([...texts, ...pending_texts]);
+      scroll(lastElmRef);
       // let temp = [...props.commonMsg, ...props.pendingMsg]
       // console.log("temp: ", temp);
       // props.setcommonMsg(temp);
@@ -205,8 +209,17 @@ function TextPage() {
         let recieverName = result.names.filter(
           (j) => j.mobile_no == i.reciever_mobile
         );
-        console.log("sender name: ", senderName[0].fullName, recieverName[0].fullName);
-        return { reciever_name: recieverName[0].fullName, sender_name: senderName[0].fullName, reciever_mobile: i.reciever_mobile, sender_mobile: i.sender_mobile };
+        console.log(
+          "sender name: ",
+          senderName[0].fullName,
+          recieverName[0].fullName
+        );
+        return {
+          reciever_name: recieverName[0].fullName,
+          sender_name: senderName[0].fullName,
+          reciever_mobile: i.reciever_mobile,
+          sender_mobile: i.sender_mobile,
+        };
       }
     });
 
@@ -215,18 +228,26 @@ function TextPage() {
         i.sender_mobile == sessionStorage.getItem("loggedInMobile") &&
         i.req_status == "pending"
       ) {
-        console.log("something")
+        console.log("something");
         let senderName = result.names.filter(
           (j) => j.mobile_no == i.sender_mobile
         );
         let recieverName = result.names.filter(
           (j) => j.mobile_no == i.reciever_mobile
         );
-        console.log("sender name: ", senderName[0].fullName, recieverName[0].fullName);
-        return { reciever_name: recieverName[0].fullName, sender_name: senderName[0].fullName, reciever_mobile: i.reciever_mobile, sender_mobile: i.sender_mobile };
-      }
-      else{
-        console.log("nothing")
+        console.log(
+          "sender name: ",
+          senderName[0].fullName,
+          recieverName[0].fullName
+        );
+        return {
+          reciever_name: recieverName[0].fullName,
+          sender_name: senderName[0].fullName,
+          reciever_mobile: i.reciever_mobile,
+          sender_mobile: i.sender_mobile,
+        };
+      } else {
+        console.log("nothing");
         return null;
       }
     });
@@ -297,8 +318,8 @@ function TextPage() {
         </div>
       </div>
 
-      <div className="chat-section">
-        {Object.keys(currentContact).lenght > 0 ? (
+      {Object.keys(currentContact).length > 0 ? (
+        <div className="chat-section">
           <>
             <RightNav />
             <Messages
@@ -314,10 +335,10 @@ function TextPage() {
               setpendingMsg={setpendingMsg}
             />
           </>
-        ) : (
-          <OnBoarding username={sessionStorage.getItem("loggedInUser")} />
-        )}
-      </div>
+        </div>
+      ) : (
+        <OnBoarding username={sessionStorage.getItem("loggedInUser")} />
+      )}
     </div>
   );
 }
