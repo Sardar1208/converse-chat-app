@@ -25,6 +25,7 @@ function App() {
   const [loggedInUsername, setLoggedInUsername] = React.useState("");
   const [loggedInMobile, setLoggedInMobile] = React.useState("");
   const [conversationIds, setConversationIds] = React.useState([]);
+  const [textQueue, setTextQueue] = React.useState([]);
   const lastElmRef = React.useRef(null);
 
   // const []
@@ -43,14 +44,14 @@ function App() {
     setLoggedInUsername,
     loggedInMobile,
     setLoggedInMobile,
-    lastElmRef
+    lastElmRef,
+    textQueue,
+    setTextQueue,
   };
   return (
     <AppContext.Provider value={AppState}>
       <Router>
-        <div className="App">
-      
-        </div>
+        <div className="App"></div>
 
         <Switch>
           <Route path="/" exact component={Landing} />

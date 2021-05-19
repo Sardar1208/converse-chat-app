@@ -23,10 +23,13 @@ function TextPage() {
   const {
     userSocket,
     setUnreadCount,
+    unreadCount,
     conversationIds,
     setLoggedInUsername,
     currentContact,
     lastElmRef,
+    textQueue,
+    setTextQueue,
   } = React.useContext(AppContext);
   const [friendsText, setfriendsText] = React.useState("");
   const [commonMsg, setcommonMsg] = React.useState([]);
@@ -39,6 +42,7 @@ function TextPage() {
     React.useState("none");
   const [chatsDisplay, setchatsDisplay] = React.useState("block");
   const [pending_text_in, setPending_text_in] = React.useState(true);
+  const [textQueueOpen, setTextQueueOpen] = React.useState(true);
   const [pendingRequestcolor, setPendingRequestColor] =
     React.useState("transparent");
 
@@ -50,7 +54,6 @@ function TextPage() {
     display: pendingRequestDisplay,
   };
 
-
   // whenever there is a new msg, updates the msg state
   useEffect(async () => {
     let unmounted = false;
@@ -59,11 +62,15 @@ function TextPage() {
         console.log("in here brouh");
         history.push("/");
       } else {
-        userSocket.on("incoming-text", (data) => {
+        userSocket.once("incoming-text", (data) => {
+          console.log("incoming-text");
           let temp = [
             ...commonMsg,
             { sender: data.sender_ID, data: data.text, time: data.time },
           ];
+          let temp2 = unreadCount;
+          temp2[data.conversation_ID] = [0, data.text];
+          setUnreadCount(temp2);
           setcommonMsg(temp);
         });
         userSocket.on("incoming-pending-text", (data) => {
@@ -73,18 +80,23 @@ function TextPage() {
           getUnreadCount(conversationIds, setUnreadCount);
           // setPending_text_in(!pending_text_in);
         });
-        userSocket.on("recieving_request", (data) => {
+        userSocket.once("recieving_request", (data) => {
           console.log("got a new friend request: ", data);
           setPendingRequestColor("rgb(121, 121, 233)");
         });
-        userSocket.on("deleted active request", (data) => {
+        userSocket.once("deleted active request", (data) => {
           console.log("info: ", data.info);
           pending_requests();
         });
-        // userSocket.on("deleted active request", (data) => {
-        //   console.log(data.info);
-        //   pending_requests();
-        // })
+        userSocket.on("text-sent", (data) => {
+          if (textQueue.length > 0) {
+            console.log("text sent: ", textQueue);
+            let temp = [...textQueue];
+            temp.splice(0, 1);
+            setTextQueue(temp);
+            setTextQueueOpen(true);
+          }
+        });
       }
     }
     return () => {
@@ -252,11 +264,14 @@ function TextPage() {
       }
     });
     // console.log("requestList: ")
-    if (true) {
-      console.log("active requests: ", listOfActiveRequests);
-      console.log("pending requests: ", listOfPendingRequests);
-      setRequests(listOfPendingRequests);
+
+    console.log("active requests: ", listOfActiveRequests);
+    console.log("pending requests: ", listOfPendingRequests);
+    if (listOfActiveRequests !== activeRequests) {
       setActiveRequests(listOfActiveRequests);
+    }
+    if (listOfPendingRequests !== requests) {
+      setRequests(listOfPendingRequests);
     }
   }
 
@@ -333,6 +348,9 @@ function TextPage() {
               setcommonMsg={setcommonMsg}
               pendingMsg={pendingMsg}
               setpendingMsg={setpendingMsg}
+              loadMessages={loadMessages}
+              textQueueOpen={textQueueOpen}
+              setTextQueueOpen={setTextQueueOpen}
             />
           </>
         </div>

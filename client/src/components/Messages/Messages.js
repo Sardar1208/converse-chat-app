@@ -20,8 +20,8 @@ function Messages(props) {
   }, [finalMsg]);
 
   useEffect(async () => {
-    console.log("commonMsg are: ", props.commonMsg);
-    console.log("pendingMsg are: ", props.pendingMsg);
+    // console.log("commonMsg are: ", props.commonMsg);
+    // console.log("pendingMsg are: ", props.pendingMsg);
     let totalMsg = await props.commonMsg.map((i) => {
       const date = new Date(parseInt(i.time));
       const temp = date.toLocaleTimeString().split(" ");
@@ -47,14 +47,14 @@ function Messages(props) {
       };
     });
     let temp = totalMsg.concat(totalMsg2);
-    setfinalMsg(temp);
+    setfinalMsg(temp.splice(temp.length -25, 25));
   }, [props.pendingMsg, props.commonMsg]);
 
   return (
     <div
       className="messages bg-white overflow-auto relative"
       onScroll={(e) => {
-        console.log("scrolling", e);
+        // console.log("scrolling", e);
         if (
           e.target.scrollHeight - (e.target.scrollTop + e.target.clientHeight) >
           500

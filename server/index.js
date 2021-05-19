@@ -9,7 +9,7 @@ const { query } = require("express");
 const { v4: uuid } = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { env } = require("process");
+const { env, emit } = require("process");
 
 // const { Socket } = require("dgram");
 dotenv.config();
@@ -110,10 +110,12 @@ io.on("connection", (socket) => {
                 text: `${data.text}`,
                 sender_ID: `${data.sender_ID}`,
                 time: `${time}`,
+                conversation_ID: `${data.conversation_ID}`,
               });
               const query = `insert into messages(msg, msg_time, conversation_ID, sender_ID) values ('${data.text}', '${time}', '${data.conversation_ID}', '${data.sender_ID}')`;
               doQuery(query, null, (result) => {
                 console.log("saved");
+                socket.emit("text-sent", {});
               });
             }
             // if online, sends the message directly.
@@ -129,6 +131,7 @@ io.on("connection", (socket) => {
                   .emit("incoming-pending-text", {
                     info: "sending signal to user",
                   });
+                socket.emit("text-sent", {});
               });
             }
           },
@@ -143,6 +146,7 @@ io.on("connection", (socket) => {
         data.conversation_ID
       }', '${data.text}', '${Date.now()}', '${data.sender_ID}')`;
       doQuery(query, null, (result) => {
+        socket.emit("text-sent", {});
         console.log("savedin pending table");
       });
     }
@@ -236,15 +240,27 @@ app.post("/login_user", authorize, async (req, res) => {
 app.post("/signup", async (req, res) => {
   console.log("the signup body: ", req.body);
   const { fullName, username, email, mobile, password, socket_ID } = req.body;
-
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(password, salt, async function (err, hash) {
-      const query = `insert into users(email_ID, username, mobile_no, socket_ID, current_status, current_chat, pass, fullName)
-      values ('${email}', '${username}', '${mobile}', '${socket_ID}', 'offline', 'none', '${hash}', '${fullName}')`;
-      doQuery(query, res, (result) => {
-        res.json({ result: "success" });
+  const query = `select username, email_ID, mobile_no from users where mobile_no="${mobile}" or username="${username}" or email_ID="${email}"`;
+  doQuery(query, res, (result) => {
+    if (result.length == 0) {
+      bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(password, salt, async function (err, hash) {
+          const query2 = `insert into users(email_ID, username, mobile_no, socket_ID, current_status, current_chat, pass, fullName)
+            values ('${email}', '${username}', '${mobile}', '${socket_ID}', 'offline', 'none', '${hash}', '${fullName}')`;
+          doQuery(query2, res, (result2) => {
+            res.json({ result: "success" });
+          });
+        });
       });
-    });
+    } else {
+      if(result && result[0].username == username){
+        res.json({result: "username already exists"});
+      }else if(result && result[0].email_ID == email){
+        res.json({result: "An account with this email already exists"});
+      }else if(result && result[0].mobile_no == mobile){
+        res.json({result: "An account with this mobile no already exists"});
+      }
+    }
   });
 });
 
@@ -339,6 +355,9 @@ app.post("/get_data", (req, res) => {
                   console.log(err);
                 } else {
                   // make a detailed array of each contact and return to the client
+                  // if(unread_count)
+                  // const query2 = `select * from `
+
                   temp_detail.push({
                     name: i.username,
                     mobile: i.mobile_no,
@@ -431,22 +450,59 @@ app.post("/get_data", (req, res) => {
         });
       });
     });
-  }
-  // bhosdiwala madarchod code
-  else if (req.headers.get == "pending_messages") {
+  } else if (req.headers.get == "pending_messages") {
     // console.log("pending messages to get are: ", req.body.conversation_IDs);
     let resultList = [];
-    for (id of req.body.conversation_IDs) {
+    for (let id of req.body.conversation_IDs) {
       const query = `select count(*) as unread_count, conversation_ID from pending_queue where conversation_ID='${id}' and sender_ID not in('${req.body.sender_ID}') group by conversation_ID`;
       doQuery(
         query,
         res,
         (result) => {
-          resultList.push(result);
-          if (req.body.conversation_IDs.length == resultList.length) {
+          // let table = "pending_queue";
+          // console.log("table: ". table);
+          // console.log("id: ".id);
+          const query2 = `select msg from pending_queue 
+          where conversation_ID="${id}" 
+          order by queue_ID desc limit 1`;
+
+          doQuery(query2, res, async (result2) => {
+            console.log("result2 is here: ", result2);
+            if (result2[0]?.msg) {
+              console.log("hulululululululu");
+              const temp = {
+                conversation_ID: id,
+                unread_count: result[0] ? result[0].unread_count : "0",
+                lastMessage: result2[0] ? result2[0].msg : null,
+              };
+              resultList.push(temp);
+              if (req.body.conversation_IDs.length == resultList.length) {
+                res.json({ result: resultList });
+              }
+            } else {
+              console.log("halalalalalalalala");
+              const query3 = `select msg from messages 
+              where conversation_ID="${id}" 
+              order by msg_ID desc limit 1`;
+
+              await doQuery(query3, res, (result3) => {
+                console.log("result3: ", result3);
+                const temp = {
+                  conversation_ID: id,
+                  unread_count: result[0] ? result[0].unread_count : "0",
+                  lastMessage: result3[0] ? result3[0].msg : null,
+                };
+                resultList.push(temp);
+                console.log("result list from inside: ", resultList);
+                if (req.body.conversation_IDs.length == resultList.length) {
+                  res.json({ result: resultList });
+                }
+              });
+            }
+
             console.log("resultList: ", resultList);
-            res.json({ result: resultList });
-          }
+            // console.log("new whole array: ", temp);
+          });
         },
         "the fukin result: "
       );

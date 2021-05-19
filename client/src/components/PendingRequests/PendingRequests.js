@@ -24,7 +24,7 @@ function PendingRequests(props) {
 
     useEffect(() => {
 
-        getContacts(setContacts, setConversationIds);
+        getContacts(setContacts, setConversationIds, "PendingRequests");
 
         //TODO - run this when the app loads
         let listOfRequests =
