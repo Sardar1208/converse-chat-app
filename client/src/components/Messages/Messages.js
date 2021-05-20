@@ -11,6 +11,7 @@ export function scroll(lastElmRef, behavior = "smooth") {
 
 function Messages(props) {
   const { lastElmRef, currentContact } = useContext(AppContext);
+  const [totalMsg, setTotalMsg] = useState([]);
   const [finalMsg, setfinalMsg] = useState([]);
   const [showDown, setShowDown] = useState(false);
   //   const lastElmRef = useRef(null);
@@ -47,14 +48,15 @@ function Messages(props) {
       };
     });
     let temp = totalMsg.concat(totalMsg2);
-    setfinalMsg(temp.splice(temp.length -25, 25));
+    setTotalMsg(temp);
+    setfinalMsg(temp.splice(temp.length - 25, 25));
   }, [props.pendingMsg, props.commonMsg]);
 
   return (
     <div
       className="messages bg-white overflow-auto relative"
       onScroll={(e) => {
-        // console.log("scrolling", e);
+        console.log("scrolling", e.target.clientHeight);
         if (
           e.target.scrollHeight - (e.target.scrollTop + e.target.clientHeight) >
           500
@@ -67,6 +69,14 @@ function Messages(props) {
           500
         ) {
           setShowDown(false);
+        }
+
+        if (e.target.scrollTop == 0) {
+          // TODO - make the splice dynamic.
+          // TODO - Set the scrollTop to the where it was before expanding the list.
+          const pastHeight = e;
+          setfinalMsg(totalMsg.splice(totalMsg.length - 50, 50));
+          e = pastHeight;
         }
       }}
     >
@@ -97,8 +107,15 @@ function Messages(props) {
                 )}
                 <div className="break-words www">{value.data}</div>
 
-                
-                <div className={(value.sender=="me" ? "text-tiny text-violet-200 text-right" : "text-tiny text-gray-500 text-right")}>{value.time}</div>
+                <div
+                  className={
+                    value.sender == "me"
+                      ? "text-tiny text-violet-200 text-right"
+                      : "text-tiny text-gray-500 text-right"
+                  }
+                >
+                  {value.time}
+                </div>
 
                 {/* <span className="-mr-6 flex text-right text-tiny text-violet-200">
                     {value.time}

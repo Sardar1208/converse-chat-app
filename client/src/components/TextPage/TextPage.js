@@ -44,7 +44,7 @@ function TextPage() {
   const [pending_text_in, setPending_text_in] = React.useState(true);
   const [textQueueOpen, setTextQueueOpen] = React.useState(true);
   const [pendingRequestcolor, setPendingRequestColor] =
-    React.useState("transparent");
+    React.useState("rgb(228, 228, 231)");
 
   const add_friendStyles = {
     display: addFriendDisplay,
