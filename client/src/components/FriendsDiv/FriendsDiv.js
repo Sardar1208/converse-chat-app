@@ -10,14 +10,27 @@ function FriendsDiv(props) {
       <input
         type="text"
         placeholder="Enter Username/Ph.no"
-        className={"text-base w-full px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 border-2 rounded bg-white rounded text-sm outline-none focus:outline-none focus:ring " + (props.reqSentObj.color === "green" ? "border-blueGray-300" : "border-red-400")} 
+        className={
+          "text-base w-full px-3 py-2.5 placeholder-blueGray-300 text-blueGray-600 border-2 rounded bg-white rounded text-sm outline-none focus:outline-none focus:ring " +
+          (props.reqSentObj.color === "red"
+            ? "border-red-400"
+            : "border-blueGray-300")
+        }
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            console.log("wel wel wel");
+            props.searchContact();
+          }
+        }}
         onChange={(e) => {
           props.setfriendsText(e.target.value);
         }}
         value={props.friendsText}
         // style={{borderColor: props.reqSentObj.color}}
       />
-      <span className="text-xs ml-2" style={{color:props.reqSentObj.color}}>{props.reqSentObj.content}</span>
+      <span className="text-xs ml-2" style={{ color: props.reqSentObj.color }}>
+        {props.reqSentObj.content}
+      </span>
 
       <div className="m-auto">
         <button
