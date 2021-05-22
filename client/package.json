@@ -20,10 +20,11 @@
     "web-vitals": "^1.1.1"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
+    "start-client": "craco start",
+    "build": "craco build && (cd server && yarn install)",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start": "cd server && yarn start"
   },
   "eslintConfig": {
     "extends": [

@@ -21,6 +21,9 @@ const db = mysql.createConnection({
   database: process.env.DB_Name,
 });
 
+const buildPath = path.join(__dirname, '..', 'build');
+app.use(express.static(buildPath));
+
 console.log("db name", process.env.DB_Name);
 
 db.connect((err) => {
@@ -49,8 +52,8 @@ app.use(
   })
 );
 
-server.listen(8080, () => {
-  console.log("Server started on port 8080");
+server.listen(process.env.PORT || 8080, () => {
+  console.log("Server started on port " + process.env.PORT || "5000");
 });
 
 const io = socket(server, {
@@ -195,7 +198,9 @@ io.on("connection", (socket) => {
             socket.broadcast
               .to(result[0].socket_ID)
               .emit("unfriended", { conversation_ID: data.conversation_ID });
-            socket.emit("unfriend done", { conversation_ID: data.conversation_ID });
+            socket.emit("unfriend done", {
+              conversation_ID: data.conversation_ID,
+            });
           });
         });
       });
@@ -492,7 +497,7 @@ app.post("/get_data", (req, res) => {
 
           doQuery(query2, res, async (result2) => {
             console.log("result2 is here: ", result2);
-            if (result2[0]?.msg) {
+            if (result2[0].msg) {
               console.log("hulululululululu");
               const temp = {
                 conversation_ID: id,
