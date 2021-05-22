@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../../AppContext";
+import { Profiles } from "../../Utils";
 import { getContacts } from "../ChatHeads/ChatHead.js";
 
 function PendingRequests(props) {
@@ -9,13 +10,13 @@ function PendingRequests(props) {
   const [activeDisplay, setActiveDisplay] = useState("none");
   const [pendingTabStyleValues, setPendingTabStyleValues] = useState([
     "black",
-    "bold",
+    "600",
     "blue",
   ]);
   const [activeTabStyleValues, setActiveTabStyleValues] = useState([
-    "grey",
-    "default",
-    "lightGray",
+    "gray",
+    "600",
+    "transparent",
   ]);
   const [activeRequestsList, setActiveRequestsList] = useState([]);
 
@@ -37,25 +38,30 @@ function PendingRequests(props) {
     let listOfRequests = props.requests.map((request) => {
       if (request) {
         return (
-          <div className="request-block bg-white mt-2 mx-3 rounded-xl border-l-8 border-violet-500">
-            <span className="pl-2 text-2xl">{request.sender_name}</span>
-            <div>
+          <div className="request-block bg-white mt-2 mx-3 rounded-xl overflow-hidden shadow-md">
+            <div className="flex items-center p-3">
+              <img src={Profiles[request.sender_avatar]} width="70px" />
+              <span className="pl-2 text-xl">{request.sender_name}</span>
+            </div>
+
+            <div className="flex bg-violet-500 flex-col">
               <button
-                className="p-1 rounded-full accept-btn"
+                className="p-1 accept-btn flex-1 px-3 hover:bg-violet-600"
                 onClick={() => {
                   props.respond_request("accepted", request.sender_mobile);
                 }}
               >
-                <img src="/svg/sent.svg" width="25px" />
+                <img src="/svg/sent.svg" width="30px" />
               </button>
+              {/* <hr className="m-auto w-3/4 p-0 bg-violet-200"></hr> */}
               <button
-                className="p-1 rounded-full decline-btn"
+                className="p-1 decline-btn flex-1 px-3"
                 on
                 onClick={() => {
                   props.respond_request("declined", request.sender_mobile);
                 }}
               >
-                <img src="/svg/cross.svg" width="25px" />
+                <img src="/svg/cross.svg" width="30px" />
               </button>
             </div>
           </div>
@@ -74,16 +80,23 @@ function PendingRequests(props) {
     let allActiveRequests = props.activeRequests.map((i) => {
       if (i) {
         return (
-          <div className="bg-red-200">
-            <span>{i.reciever_name}</span>
-            <button
-              onClick={() => {
-                props.deleteActiveRequest(i.reciever_mobile);
-              }}
-              className="bg-red-500 ml-6"
-            >
-              Cancel
-            </button>
+          <div className="request-block bg-white mt-2 mx-3 rounded-xl overflow-hidden shadow-md">
+            <div className="flex items-center p-3">
+              <img src={Profiles[i.reciever_avatar]} width="70px" />
+              <span className="pl-2 text-xl">{i.reciever_name}</span>
+            </div>
+
+            <div className="flex bg-violet-500 flex-col">
+              <button
+                className="p-1 decline-btn flex-1 px-3"
+                on
+                onClick={() => {
+                  props.deleteActiveRequest(i.reciever_mobile);
+                }}
+              >
+                <img src="/svg/cross.svg" width="30px" />
+              </button>
+            </div>
           </div>
         );
       }
@@ -97,31 +110,31 @@ function PendingRequests(props) {
   }, [props.activeRequests]);
 
   return (
-    <div className="h-full bg-blueGray-50">
-      <div className="flex justify-center bg-white pb-2">
+    <div className="h-full bg-violet-50">
+      <div className="flex justify-center bg-white mb-4">
         <span
           onClick={() => {
-            setActiveTabStyleValues(["grey", "default", "lightGray"]);
-            setPendingTabStyleValues(["black", "bold", "blue"]);
+            setActiveTabStyleValues(["grey", "default", "transparent"]);
+            setPendingTabStyleValues(["black", "600", "blue"]);
             setActiveDisplay("none");
             setPendingDisplay("block");
           }}
-          className="mr-4 text-lg text-gray-500 border-blue-200 border-b-2 cursor-default hover:text-black hover:border-black hover:cursor-pointer pending-tab"
+          className="text-lg flex-1 mx-2 py-2 text-center text-gray-500 border-blue-200 border-b-2 cursor-default hover:text-black hover:border-black hover:cursor-pointer pending-tab"
           style={pendingTabStyle}
         >
-          PENDING
+          RECEIVED
         </span>
         <span
           onClick={() => {
-            setPendingTabStyleValues(["grey", "default", "lightGray"]);
-            setActiveTabStyleValues(["black", "bold", "blue"]);
+            setPendingTabStyleValues(["grey", "default", "transparent"]);
+            setActiveTabStyleValues(["black", "600", "blue"]);
             setPendingDisplay("none");
             setActiveDisplay("block");
           }}
-          className="ml-4 text-lg text-gray-500 border-blue-200 border-b-2  cursor-default hover:text-black hover:border-black hover:cursor-pointer active-tab"
+          className="flex-1 text-lg mx-2 py-2 text-center text-gray-500 border-blue-200 border-b-2 cursor-default hover:text-black hover:border-black hover:cursor-pointer active-tab"
           style={activeTabStyle}
         >
-          ACTIVE
+          SENT
         </span>
       </div>
 

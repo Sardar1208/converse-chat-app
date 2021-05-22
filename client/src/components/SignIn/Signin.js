@@ -30,6 +30,7 @@ export async function AuthorizeUser(token, uniqueKey, socket_ID, setLoggedInUser
         console.log("successfull login!!!", result);
         sessionStorage.setItem("loggedInUser", `${result.username}`)
         sessionStorage.setItem("loggedInMobile", `${result.mobile}`)
+        sessionStorage.setItem("loggedInAvatar", `${result.avatar}`)
         setLoggedInUsername(result.username);
         setLoggedInMobile(result.mobile)
         history.push("/textPage");

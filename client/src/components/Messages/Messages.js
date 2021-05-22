@@ -49,7 +49,9 @@ function Messages(props) {
     });
     let temp = totalMsg.concat(totalMsg2);
     setTotalMsg(temp);
-    setfinalMsg(temp.splice(temp.length - 25, 25));
+    const temp2 = totalMsg;
+    setfinalMsg(temp2.splice(temp2.length - 25, 25));
+    // setfinalMsg(temp);
   }, [props.pendingMsg, props.commonMsg]);
 
   return (
@@ -71,13 +73,14 @@ function Messages(props) {
           setShowDown(false);
         }
 
-        if (e.target.scrollTop == 0) {
-          // TODO - make the splice dynamic.
-          // TODO - Set the scrollTop to the where it was before expanding the list.
-          const pastHeight = e;
-          setfinalMsg(totalMsg.splice(totalMsg.length - 50, 50));
-          e = pastHeight;
-        }
+        // if (e.target.scrollTop == 0) {
+        //   // TODO - make the splice dynamic.
+        //   // TODO - Set the scrollTop to the where it was before expanding the list.
+        //   const pastHeight = e;
+        //   let temp = totalMsg;
+        //   setfinalMsg(temp.splice(temp.length - 50, 50));
+        //   e = pastHeight;
+        // }
       }}
     >
       {finalMsg.map((value, key, prevArr) => {

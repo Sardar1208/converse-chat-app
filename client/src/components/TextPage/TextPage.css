@@ -2,6 +2,7 @@
   display: grid;
   grid: 100vh / auto;
   grid-template-columns: 25% 75%;
+  overflow: visible;
 }
 .contacts-section {
   display: grid;
@@ -9,7 +10,8 @@
   background-color: white;
   grid-template-rows: 10% auto;
   max-height: 100vh;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x:hidden;
 }
 .chat-section {
   display: grid;
@@ -17,6 +19,7 @@
   /* overflow: scroll; */
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  overflow: visible;
 }
 .contacts-section::-webkit-scrollbar {
   display: none;
@@ -27,11 +30,6 @@
 }
 .messages::-webkit-scrollbar {
   display: none;
-}
-.my-profile {
-  font-size: 1.5rem;
-  font-weight: bold;
-  padding-left: 1rem;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
@@ -68,7 +66,7 @@
   /* background-color: black; */
 }
 .friends-section {
-  background-color: white;
+  /* background-color: ; */
   height: 100%;
   display: flex;
 }
@@ -109,6 +107,7 @@
   background-color: white;
   display: flex;
   align-items: center;
+  overflow: visible;
 }
 .left-navbar {
   background-color: white;
@@ -122,9 +121,6 @@
   /* object-fit:fill */
   border-radius: 50%;
   margin-right: 1rem;
-}
-.chat-title {
-  color: black;
 }
 .status {
   color: green;
@@ -158,13 +154,6 @@ hr {
   color: white;
   background-color: white;
 }
-.options button {
-  border-width: 2px;
-  border-radius: 50%;
-  margin: 0.5rem;
-  height: 40px;
-  width: 40px;
-}
 .tooltip-text::after {
   content: " ";
   position: absolute;
@@ -191,25 +180,22 @@ hr {
 .request-block {
   display: flex;
   justify-content: space-between;
-  padding: 1rem;
+  /* padding: 1rem; */
 }
 .request-block button {
   /* border: none; */
   /* border-radius: 50%; */
-  margin-left: 1rem;
+  /* margin-left: 1rem; */
 }
-.accept-btn {
-  border-width: 2px;
-}
-.accept-btn:hover {
-  background-color: lightgreen;
-}
+/* .accept-btn {
+  background-color : rgb(129, 199, 129);
+}*/
 .decline-btn {
-  border-width: 2px;
+  background-color: #f87171;
 }
-.decline-btn:hover {
+/* .decline-btn:hover {
   background-color: rgba(228, 130, 130, 0.822);
-}
+} */
 .messages_section {
   /* background-color: black; */
   overflow: visible;

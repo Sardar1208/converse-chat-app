@@ -43,6 +43,11 @@ function TextPage() {
   const [chatsDisplay, setchatsDisplay] = React.useState("block");
   const [pending_text_in, setPending_text_in] = React.useState(true);
   const [textQueueOpen, setTextQueueOpen] = React.useState(true);
+  const [reqSentDisplay, setReqSentDisplay] = React.useState("none");
+  const [reqSentObj, setReqSentObj] = React.useState({
+    color: "transparent",
+    content: "",
+  });
   const [pendingRequestcolor, setPendingRequestColor] =
     React.useState("rgb(228, 228, 231)");
 
@@ -97,6 +102,17 @@ function TextPage() {
             setTextQueueOpen(true);
           }
         });
+        userSocket.on("request-sent", (data) => {
+          console.log("request sent");
+          if (data.info == "success") {
+            setReqSentDisplay("block");
+            setReqSentObj({ color: "green", content: "Friend request sent" });
+            setfriendsText("");
+          } else {
+            setReqSentDisplay("block");
+            setReqSentObj({ color: "red", content: "User not found" });
+          }
+        });
       }
     }
     return () => {
@@ -134,11 +150,16 @@ function TextPage() {
       setchatsDisplay("none");
       setpendingRequestDisplay("none");
       setaddFriendDisplay("flex");
+      // setReqSentDisplay("none")
     } else if (name == "pending_requests") {
       pending_requests();
       setchatsDisplay("none");
       setaddFriendDisplay("none");
       setpendingRequestDisplay("block");
+    } else if (name == "chats") {
+      setchatsDisplay("block");
+      setaddFriendDisplay("none");
+      setpendingRequestDisplay("none");
     }
   }
 
@@ -231,6 +252,8 @@ function TextPage() {
           sender_name: senderName[0].fullName,
           reciever_mobile: i.reciever_mobile,
           sender_mobile: i.sender_mobile,
+          reciever_avatar: recieverName[0].avatarFlag,
+          sender_avatar: senderName[0].avatarFlag,
         };
       }
     });
@@ -257,6 +280,8 @@ function TextPage() {
           sender_name: senderName[0].fullName,
           reciever_mobile: i.reciever_mobile,
           sender_mobile: i.sender_mobile,
+          reciever_avatar: recieverName[0].avatarFlag,
+          sender_avatar: senderName[0].avatarFlag,
         };
       } else {
         console.log("nothing");
@@ -301,7 +326,7 @@ function TextPage() {
 
   return (
     <div className="split-view">
-      <div className="contacts-section bg-blueGray-50">
+      <div className="contacts-section bg-violet-50">
         <LeftNav function={openTab} pendingRequestcolor={pendingRequestcolor} />
         <ChatHead
           display={chatsDisplay}
@@ -313,11 +338,14 @@ function TextPage() {
           pending_text_in={pending_text_in}
         />
 
-        <div className="friends-section" style={add_friendStyles}>
+        <div className="friends-section bg-violet-50" style={add_friendStyles}>
           <FriendsDiv
             friendsText={friendsText}
             setfriendsText={setfriendsText}
             searchContact={searchContact}
+            reqSentDisplay={reqSentDisplay}
+            setReqSentDisplay={setReqSentDisplay}
+            reqSentObj={reqSentObj}
           />
         </div>
 

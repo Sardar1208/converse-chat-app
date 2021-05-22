@@ -25,19 +25,10 @@
     height: 1rem;
 }
 .card-text h1{
-    font-size: 2rem;
     margin-bottom: 0rem;
 }
 .card-text h5{
     display: inline;
-    font-size: 1rem;
-}
-.card-img img{
-    /* margin-right: 1rem; */
-    margin: 10% 10%;
-    height: 80%;
-    width: 80%;
-    border-radius: 50%;
 }
 hr {
     border: 0;

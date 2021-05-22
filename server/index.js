@@ -168,9 +168,12 @@ io.on("connection", (socket) => {
               socket.broadcast
                 .to(`${result[0].socket_ID}`)
                 .emit("recieving_request", data);
+              socket.emit("request-sent", { info: "success" });
             });
           }
         });
+      } else {
+        socket.emit("request-sent", { info: "failure" });
       }
     });
   });
@@ -230,6 +233,7 @@ app.post("/login_user", authorize, async (req, res) => {
         result: "success",
         mobile: result[0].mobile_no,
         username: result[0].username,
+        avatar: result[0].avatarFlag,
       });
     } else {
       res.json({ result: "new user" });
@@ -253,12 +257,12 @@ app.post("/signup", async (req, res) => {
         });
       });
     } else {
-      if(result && result[0].username == username){
-        res.json({result: "username already exists"});
-      }else if(result && result[0].email_ID == email){
-        res.json({result: "An account with this email already exists"});
-      }else if(result && result[0].mobile_no == mobile){
-        res.json({result: "An account with this mobile no already exists"});
+      if (result && result[0].username == username) {
+        res.json({ result: "username already exists" });
+      } else if (result && result[0].email_ID == email) {
+        res.json({ result: "An account with this email already exists" });
+      } else if (result && result[0].mobile_no == mobile) {
+        res.json({ result: "An account with this mobile no already exists" });
       }
     }
   });
@@ -343,7 +347,7 @@ app.post("/get_data", (req, res) => {
           });
 
           // from the above array, get their username.
-          const query = `select username,mobile_no from users where mobile_no in (${users})`;
+          const query = `select username,mobile_no,avatarFlag from users where mobile_no in (${users})`;
           doQuery(query, res, async (theresult) => {
             let temp_detail = [];
 
@@ -362,6 +366,7 @@ app.post("/get_data", (req, res) => {
                     name: i.username,
                     mobile: i.mobile_no,
                     conversation_ID: result[0].conversation_ID,
+                    avatar: i.avatarFlag,
                     unread_count: "0",
                   });
                   if (temp_detail.length == theresult.length) {
@@ -404,7 +409,7 @@ app.post("/get_data", (req, res) => {
             numbers.push(i.reciever_mobile);
           }
         }
-        const query2 = `select fullName, mobile_no from users where mobile_no in (${numbers})`;
+        const query2 = `select fullName, mobile_no, avatarFlag from users where mobile_no in (${numbers})`;
         doQuery(query2, res, (result2) => {
           console.log("full names :", result2);
           res.json({ result: result, names: result2 });

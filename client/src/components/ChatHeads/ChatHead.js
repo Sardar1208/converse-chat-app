@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import "./ChatHead.css";
 import { scroll } from "../Messages/Messages.js";
+import { Profiles } from "../../Utils";
 import { AppContext } from "../../AppContext";
 
 export async function getUnreadCount(conversationIds, setUnreadCount) {
@@ -111,14 +112,14 @@ function ChatHead(props) {
             }}
           >
             <div className="card-img col-span-2">
-              <img src="/images/pic_1.jpg" />
+              <img src={`${Profiles[user.avatar]}`} />
             </div>
             <div className="card-text col-span-7 text-white">
               <div className="text-body">
-                <h1 className="text-black group-hover:text-white">
+                <h1 className="text-black group-hover:text-white text-2xl">
                   {user.name}
                 </h1>
-                <h5 className="group-hover:text-violet-200 text-gray-500">
+                <h5 className="group-hover:text-violet-200 text-gray-500 text-base">
                   {unreadCount[`${user.conversation_ID}`] &&
                   unreadCount[`${user.conversation_ID}`][1]
                     ? unreadCount[`${user.conversation_ID}`][1]
