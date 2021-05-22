@@ -83,7 +83,7 @@ function Landing() {
           </h1>
           <h1 className="text-6xl font-bold items-end tracking-wider">
             Welcome to Converse
-            <img src="/svg/logo.svg" />
+            {/* <img src="/svg/logo.svg" /> */}
           </h1>
           <h4 className="text-4xl font-thin font-mono mt-8 flex items-end">
             {"</> Made with"}

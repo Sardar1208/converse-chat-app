@@ -183,6 +183,25 @@ io.on("connection", (socket) => {
     doQuery(query, null, null, "updatation done: ");
   });
 
+  socket.on("unfriend", (data) => {
+    const query = `select socket_ID,mobile_no from users where username="${data.unfriended_username}"`;
+    doQuery(query, null, (result) => {
+      const query2 = `delete from messages where conversation_ID="${data.conversation_ID}"`;
+      doQuery(query2, null, (result2) => {
+        const query3 = `delete from conversation where conversation_ID="${data.conversation_ID}"`;
+        doQuery(query3, null, (result3) => {
+          const query4 = `delete from pendingrequests where sender_mobile in("${data.mobile}", "${result[0].mobile_no}") and reciever_mobile in("${data.mobile}", "${result[0].mobile_no}")`;
+          doQuery(query4, null, (result4) => {
+            socket.broadcast
+              .to(result[0].socket_ID)
+              .emit("unfriended", { conversation_ID: data.conversation_ID });
+            socket.emit("unfriend done", { conversation_ID: data.conversation_ID });
+          });
+        });
+      });
+    });
+  });
+
   socket.on("delete_request", (data) => {
     const { sender_mobile, reciever_mobile, socket_ID } = data;
     const query = `delete from pendingrequests where sender_mobile="${sender_mobile}" and reciever_mobile="${reciever_mobile}" and req_status="pending"`;

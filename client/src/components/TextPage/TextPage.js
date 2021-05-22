@@ -30,6 +30,8 @@ function TextPage() {
     lastElmRef,
     textQueue,
     setTextQueue,
+    contacts,
+    setContacts,
   } = React.useContext(AppContext);
   const [friendsText, setfriendsText] = React.useState("");
   const [commonMsg, setcommonMsg] = React.useState([]);
@@ -113,12 +115,40 @@ function TextPage() {
             setReqSentObj({ color: "red", content: "User not found" });
           }
         });
+        userSocket.on("unfriended", (data) => {
+          console.log("you have been unfriended");
+          const newContacts = contacts.map((i) => {
+            if(i.conversation_ID != data.conversation_ID){
+              return i;
+            }
+          });
+          console.log("new contacts: ", newContacts);
+          setContacts(newContacts);
+        });
+        userSocket.on("unfriend done", (data) => {
+          console.log("you have unfirended someone");
+          const newContacts = contacts.map((i) => {
+            if(i.conversation_ID != data.conversation_ID){
+              return i;
+            }
+          });
+          console.log("new contacts: ", newContacts);
+          setContacts(newContacts);
+        });
       }
     }
     return () => {
       unmounted = true;
     };
   }, [commonMsg]);
+
+  async function Unfriend(conversation_ID, username) {
+    userSocket.emit("unfriend", {
+      conversation_ID: conversation_ID,
+      unfriended_username: username,
+      mobile: sessionStorage.getItem("loggedInMobile"),
+    });
+  }
 
   // accept or decline requests
   async function respond_request(status, sender) {
@@ -364,7 +394,7 @@ function TextPage() {
       {Object.keys(currentContact).length > 0 ? (
         <div className="chat-section">
           <>
-            <RightNav />
+            <RightNav Unfriend={Unfriend} />
             <Messages
               commonMsg={commonMsg}
               pendingMsg={pendingMsg}

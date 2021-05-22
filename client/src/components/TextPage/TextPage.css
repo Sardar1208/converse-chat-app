@@ -69,6 +69,7 @@
   /* background-color: ; */
   height: 100%;
   display: flex;
+  /* color: rgb(88, 87, 87); */
 }
 .friends-heading {
   font-size: 1rem;

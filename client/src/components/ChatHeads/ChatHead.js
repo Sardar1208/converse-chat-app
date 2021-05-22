@@ -101,51 +101,54 @@ function ChatHead(props) {
     console.log("making final list", contacts);
     if (contacts.length > 0 && contacts != "no users") {
       let list = contacts.map((user) => {
-        console.log("dog cat: ", unreadCount);
-        return (
-          <div
-            className="chat-head mb-2 hover:bg-violet-500 group grid grid-cols-10 bg-white-400 shadow-md p-4 mx-3 rounded-xl "
-            onClick={() => {
-              setCurrentContact(user);
-              props.loadMessages(user.conversation_ID);
-              openChat(user.mobile);
-            }}
-          >
-            <div className="card-img col-span-2">
-              <img src={`${Profiles[user.avatar]}`} />
-            </div>
-            <div className="card-text col-span-7 text-white">
-              <div className="text-body">
-                <h1 className="text-black group-hover:text-white text-2xl">
-                  {user.name}
-                </h1>
-                <h5 className="group-hover:text-violet-200 text-gray-500 text-base">
-                  {unreadCount[`${user.conversation_ID}`] &&
-                  unreadCount[`${user.conversation_ID}`][1]
-                    ? unreadCount[`${user.conversation_ID}`][1]
-                    : "No chat history"}
-                </h5>
+        if (user) {
+          console.log("dog cat: ", unreadCount);
+          return (
+            <div
+              className="chat-head mb-2 hover:bg-violet-500 group grid grid-cols-10 bg-white-400 shadow-md p-4 mx-3 rounded-xl "
+              onClick={() => {
+                setCurrentContact(user);
+                props.loadMessages(user.conversation_ID);
+                openChat(user.mobile);
+              }}
+            >
+              <div className="card-img col-span-2">
+                <img src={`${Profiles[user.avatar]}`} />
               </div>
-            </div>
-            <div className="unread col-span-1">
-              <div>
-                <span>
-                  {unreadCount[`${user.conversation_ID}`] &&
-                  unreadCount[`${user.conversation_ID}`][0] > 0
-                    ? unreadCount[`${user.conversation_ID}`][0]
-                    : ""}
-                </span>
+              <div className="card-text col-span-7 text-white">
+                <div className="text-body">
+                  <h1 className="text-black group-hover:text-white text-2xl">
+                    {user.name}
+                  </h1>
+                  <h5 className="group-hover:text-violet-200 text-gray-500 text-base">
+                    {unreadCount[`${user.conversation_ID}`] &&
+                    unreadCount[`${user.conversation_ID}`][1]
+                      ? unreadCount[`${user.conversation_ID}`][1]
+                      : "No chat history"}
+                  </h5>
+                </div>
               </div>
+              <div className="unread col-span-1">
+                <div>
+                  <span>
+                    {unreadCount[`${user.conversation_ID}`] &&
+                    unreadCount[`${user.conversation_ID}`][0] > 0
+                      ? unreadCount[`${user.conversation_ID}`][0]
+                      : ""}
+                  </span>
+                </div>
+              </div>
+
+              {/* <hr /> */}
             </div>
-            {/* <hr /> */}
-          </div>
-        );
+          );
+        }
       });
       if (list.length == contacts.length) {
         SetUsersList(list);
       }
     }
-  }, [unreadCount]);
+  }, [unreadCount, contacts]);
 
   function openChat(mobile) {
     scroll(lastElmRef);
