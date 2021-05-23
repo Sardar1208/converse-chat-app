@@ -13,7 +13,7 @@ import { AppContext } from "../../AppContext";
 
 export async function getUnreadCount(conversationIds, setUnreadCount) {
   console.log("running getunreadcount");
-  const res2 = await fetch("http://localhost:8080/get_data", {
+  const res2 = await fetch(process.env.REACT_APP_API_URL + "/get_data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -43,7 +43,7 @@ export async function getUnreadCount(conversationIds, setUnreadCount) {
 
 export async function getContacts(setContacts, setConversationIds, from) {
   console.log("from :", from);
-  const res = await fetch("http://localhost:8080/get_data", {
+  const res = await fetch(process.env.REACT_APP_API_URL + "/get_data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

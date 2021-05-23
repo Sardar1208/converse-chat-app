@@ -10,7 +10,7 @@ import {
 
 export async function AuthorizeUser(token, uniqueKey, socket_ID, setLoggedInUsername, setLoggedInMobile, history) {
 
-    const res = await fetch("http://localhost:8080/login_user", {
+    const res = await fetch(process.env.REACT_APP_API_URL + "/login_user", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -51,7 +51,7 @@ function SignIn(props) {
     const [password, setPassword] = useState("");
 
     async function SignIn() {
-        const res = await fetch("http://localhost:8080/signin", {
+        const res = await fetch(process.env.REACT_APP_API_URL + "/signin", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

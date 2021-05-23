@@ -52,7 +52,7 @@ function Landing() {
   const [loginSection, setLoginSection] = React.useState(false);
 
   useEffect(async () => {
-    const socket = io("http://localhost:8080/");
+    const socket = io(`${process.env.REACT_APP_API_URL}`);
 
     socket.on("connect", () => {
       console.log(`connected with id: ${socket.id}`);

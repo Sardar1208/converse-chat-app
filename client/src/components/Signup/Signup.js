@@ -16,7 +16,7 @@ function Signup(props) {
   const [passwordValidation, setPasswordValidation] = useState("");
 
   async function SignUp() {
-    const res = await fetch("http://localhost:8080/signup", {
+    const res = await fetch(process.env.REACT_APP_API_URL + "/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

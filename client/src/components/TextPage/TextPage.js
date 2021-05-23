@@ -153,7 +153,7 @@ function TextPage() {
   // accept or decline requests
   async function respond_request(status, sender) {
     console.log("in here");
-    const res = await fetch("http://localhost:8080/respond_request", {
+    const res = await fetch(process.env.REACT_APP_API_URL + "/respond_request", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -195,7 +195,7 @@ function TextPage() {
 
   async function loadMessages(conversation_ID) {
     const user = sessionStorage.getItem("loggedInMobile");
-    const res = await fetch("http://localhost:8080/get_data", {
+    const res = await fetch(process.env.REACT_APP_API_URL + "/get_data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -250,7 +250,7 @@ function TextPage() {
   // gets and shows all the pending requests
   async function pending_requests() {
     console.log("running pending requests...");
-    const res = await fetch("http://localhost:8080/get_data", {
+    const res = await fetch(process.env.REACT_APP_API_URL + "/get_data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

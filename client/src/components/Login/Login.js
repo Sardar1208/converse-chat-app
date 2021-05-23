@@ -26,23 +26,22 @@ function Login() {
 
   let loadingStyle = {
     display: loadingDisplay,
-  }
+  };
 
   let loginStyle = {
     display: loginDisplay,
-  }
+  };
 
   let addDetailsStyle = {
     display: addDetailsDisplay,
-  }
+  };
 
   let loginDivStyle = {
     display: loginDivDisplay,
-  }
+  };
 
   useEffect(async () => {
-
-    const socket = io("http://localhost:8080/");
+    const socket = io(`${process.env.REACT_APP_API_URL}`);
 
     socket.on("connect", () => {
       console.log(`connected with id: ${socket.id}`);
@@ -50,7 +49,7 @@ function Login() {
       setuserSocket(socket);
       setsocketID(socket.id);
 
-      //checks if user is in sessionStorage and logs in directly 
+      //checks if user is in sessionStorage and logs in directly
       const localUsername = sessionStorage.getItem("loggedInUser");
       if (localUsername) {
         setMobile(localUsername);
@@ -60,14 +59,11 @@ function Login() {
         setLoginDisplay("block");
       }
     });
-
-
   }, []);
 
   // if user is exists directly logs in, else asks for additional details.
   async function CheckSignin(mobile_no, id) {
-
-    const res = await fetch("http://localhost:8080/login_user", {
+    const res = await fetch(process.env.REACT_APP_API_URL + "/login_user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +79,7 @@ function Login() {
 
     // if user exists then login
     if (result.result == "success") {
-      sessionStorage.setItem("loggedInUser", `${mobile_no}`)
+      sessionStorage.setItem("loggedInUser", `${mobile_no}`);
       history.push("/textPage");
     }
     //id new user ask additional info
@@ -95,7 +91,7 @@ function Login() {
 
   // Sign in the newly created user
   async function Signin() {
-    const res = await fetch("http://localhost:8080/user_details", {
+    const res = await fetch(process.env.REACT_APP_API_URL + "/user_details", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -126,8 +122,10 @@ function Login() {
       <div className="Login" style={loginStyle}>
         <div className="text">
           <h1 className="login-heading">Welcome to Converse!</h1>
-          <p className="login-desc">Hi! Converse is a real time chat application that offers the basic functionality of chat
-          along with the features like groups, broadcast channels and more...
+          <p className="login-desc">
+            Hi! Converse is a real time chat application that offers the basic
+            functionality of chat along with the features like groups, broadcast
+            channels and more...
           </p>
           <hr className="hr"></hr>
 
@@ -142,12 +140,20 @@ function Login() {
               }}
               value={mobile}
             />
-            <button className="login-btn" onClick={() => { CheckSignin(mobile, userSocket.id) }}>Login</button>
+            <button
+              className="login-btn"
+              onClick={() => {
+                CheckSignin(mobile, userSocket.id);
+              }}
+            >
+              Login
+            </button>
           </div>
 
-
           <div className="additional-details" style={addDetailsStyle}>
-            <h1 className="login-heading">We just need a few additional details...</h1>
+            <h1 className="login-heading">
+              We just need a few additional details...
+            </h1>
             <input
               className="input-field"
               type="email"
@@ -166,14 +172,17 @@ function Login() {
                 setUsername(e.target.value);
               }}
               value={username}
-
             />
 
-            <button className="login-btn" onClick={() => { Signin() }}>Login</button>
-
+            <button
+              className="login-btn"
+              onClick={() => {
+                Signin();
+              }}
+            >
+              Login
+            </button>
           </div>
-
-
         </div>
       </div>
     </div>
