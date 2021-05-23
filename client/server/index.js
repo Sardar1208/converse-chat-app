@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const { query } = require("express");
 const { v4: uuid } = require("uuid");
+const path = require("path");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { env, emit } = require("process");
@@ -21,14 +22,12 @@ const db = mysql.createConnection({
   database: process.env.DB_Name,
 });
 
-const buildPath = path.join(__dirname, '..', 'build');
-app.use(express.static(buildPath));
 
 console.log("db name", process.env.DB_Name);
 
 db.connect((err) => {
   if (err) throw err;
-
+  
   console.log("user socket database connected");
 });
 
@@ -37,6 +36,8 @@ const app = express();
 const server = http.createServer(app);
 
 const jsonparser = bodyParser.json();
+const buildPath = path.join(__dirname, '..', 'build');
+app.use(express.static(buildPath));
 
 app.use(jsonparser);
 app.use(
@@ -497,7 +498,7 @@ app.post("/get_data", (req, res) => {
 
           doQuery(query2, res, async (result2) => {
             console.log("result2 is here: ", result2);
-            if (result2[0].msg) {
+            if (result2[0]?.msg) {
               console.log("hulululululululu");
               const temp = {
                 conversation_ID: id,
