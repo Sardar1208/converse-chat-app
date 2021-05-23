@@ -22,12 +22,16 @@ const db = mysql.createConnection({
   database: process.env.DB_Name,
 });
 
-
+const AvatarInitiator = () => {
+  const values = ["A", "B", "C", "D", "E", "F"];
+  const rno = Math.floor(Math.random() * 24) % 6;
+  return values[rno];
+};
 console.log("db name", process.env.DB_Name);
 
 db.connect((err) => {
   if (err) throw err;
-  
+
   console.log("user socket database connected");
 });
 
@@ -36,7 +40,7 @@ const app = express();
 const server = http.createServer(app);
 
 const jsonparser = bodyParser.json();
-const buildPath = path.join(__dirname, '..', 'build');
+const buildPath = path.join(__dirname, "..", "build");
 app.use(express.static(buildPath));
 
 app.use(jsonparser);
@@ -269,13 +273,14 @@ app.post("/login_user", authorize, async (req, res) => {
 app.post("/signup", async (req, res) => {
   console.log("the signup body: ", req.body);
   const { fullName, username, email, mobile, password, socket_ID } = req.body;
+  const AvatarFlag = AvatarInitiator();
   const query = `select username, email_ID, mobile_no from users where mobile_no="${mobile}" or username="${username}" or email_ID="${email}"`;
   doQuery(query, res, (result) => {
     if (result.length == 0) {
       bcrypt.genSalt(10, function (err, salt) {
         bcrypt.hash(password, salt, async function (err, hash) {
-          const query2 = `insert into users(email_ID, username, mobile_no, socket_ID, current_status, current_chat, pass, fullName)
-            values ('${email}', '${username}', '${mobile}', '${socket_ID}', 'offline', 'none', '${hash}', '${fullName}')`;
+          const query2 = `insert into users(email_ID, username, mobile_no, socket_ID, current_status, current_chat, pass, fullName,avatarFlag)
+            values ('${email}', '${username}', '${mobile}', '${socket_ID}', 'offline', 'none', '${hash}', '${fullName}','${AvatarFlag}')`;
           doQuery(query2, res, (result2) => {
             res.json({ result: "success" });
           });
@@ -321,7 +326,7 @@ app.post("/signin", async (req, res) => {
     res,
     async (result) => {
       console.log("lulululululu: ", result);
-      await bcrypt.compare(password, result[0].pass).then((bcrypt_result) => {
+      await bcrypt.compare(password, result[0]?.pass).then((bcrypt_result) => {
         if (bcrypt_result == true) {
           console.log("logged in");
 
